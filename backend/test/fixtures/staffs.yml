@@ -1,0 +1,12 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# password_digest はテスト用の固定パスワード "password" のハッシュ。
+
+yamada:
+  name: 山田 太郎
+  email: yamada@example.com
+  password_digest: <%= BCrypt::Password.create("password") %>
+
+sato:
+  name: 佐藤 花子
+  email: sato@example.com
+  password_digest: <%= BCrypt::Password.create("password") %>

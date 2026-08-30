@@ -1,0 +1,23 @@
+# MySQL. ローカルは docker compose（リポジトリ直下の docker-compose.yml）で 8.0 を起動する。
+# 接続情報は環境変数で上書きでき、未設定時は docker-compose.yml のデフォルト値に合わせている。
+default: &default
+  adapter: mysql2
+  encoding: utf8mb4
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("DB_HOST", "127.0.0.1") %>
+  port: <%= ENV.fetch("DB_PORT", 3306) %>
+  username: <%= ENV.fetch("DB_USERNAME", "root") %>
+  password: <%= ENV.fetch("DB_PASSWORD", "password") %>
+
+development:
+  <<: *default
+  database: <%= ENV.fetch("DB_NAME", "inquiry_management_development") %>
+
+# テスト用DB。development用DBとは別名にすること。
+test:
+  <<: *default
+  database: inquiry_management_test
+
+production:
+  <<: *default
+  database: <%= ENV.fetch("DB_NAME", "inquiry_management_production") %>

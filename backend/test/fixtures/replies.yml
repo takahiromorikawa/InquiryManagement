@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+first_reply:
+  inquiry: in_progress_inquiry
+  staff: yamada
+  body: お問い合わせありがとうございます。確認いたします。
+
+second_reply:
+  inquiry: in_progress_inquiry
+  staff: sato
+  body: 宛名を修正した請求書を再送しました。

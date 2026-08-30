@@ -1,14 +1,247 @@
 <script setup>
-// S4: 問い合わせ詳細画面（UC4/UC5/UC6）
-// この Issue ではルーティングの雛形のみ。詳細・返信・ステータス変更は後続 Issue。
-defineProps({ id: { type: String, required: true } })
+// S4: 問い合わせ詳細画面（UC4 詳細・返信スレッド / UC5 返信投稿 / UC6 ステータス変更）
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { api, ApiError } from '../lib/api'
+import { useAuthStore } from '../stores/auth'
+import { formatDateTime } from '../lib/format'
+import { STATUS_LABEL } from '../constants'
+import StatusBadge from '../components/StatusBadge.vue'
+
+const props = defineProps({ id: { type: String, required: true } })
+
+const auth = useAuthStore()
+const router = useRouter()
+
+const STATUS_OPTIONS = Object.entries(STATUS_LABEL).map(([value, label]) => ({ value, label }))
+
+const inquiry = ref(null)
+const loading = ref(true)
+const loadError = ref('')
+
+const statusUpdating = ref(false)
+const statusNote = ref('')
+const statusError = ref('')
+
+const replyForm = reactive({ body: '' })
+const replySubmitting = ref(false)
+const replyError = ref('')
+
+// 401 なら未ログイン扱いにしてログイン画面へ。処理済みなら true を返す。
+function handledAsUnauthorized(e) {
+  if (e instanceof ApiError && e.status === 401) {
+    auth.clear()
+    router.push({ name: 'login' })
+    return true
+  }
+  return false
+}
+
+onMounted(async () => {
+  try {
+    inquiry.value = await api.get(`/inquiries/${props.id}`)
+  } catch (e) {
+    if (handledAsUnauthorized(e)) return
+    loadError.value =
+      e instanceof ApiError && e.status === 404
+        ? '指定された問い合わせが見つかりません。'
+        : '問い合わせの取得に失敗しました。'
+  } finally {
+    loading.value = false
+  }
+})
+
+async function onChangeStatus(event) {
+  const next = event.target.value
+  const prev = inquiry.value.status
+  if (next === prev) return
+
+  statusError.value = ''
+  statusNote.value = ''
+  statusUpdating.value = true
+  try {
+    const updated = await api.patch(`/inquiries/${props.id}`, { status: next })
+    inquiry.value = updated
+    statusNote.value = '更新しました'
+    setTimeout(() => (statusNote.value = ''), 2000)
+  } catch (e) {
+    if (handledAsUnauthorized(e)) return
+    event.target.value = prev // 選択を元に戻す
+    statusError.value = 'ステータスの更新に失敗しました。'
+  } finally {
+    statusUpdating.value = false
+  }
+}
+
+async function onSubmitReply() {
+  replyError.value = ''
+  if (replyForm.body.trim() === '') {
+    replyError.value = '返信内容を入力してください。'
+    return
+  }
+
+  replySubmitting.value = true
+  try {
+    const reply = await api.post(`/inquiries/${props.id}/replies`, { body: replyForm.body.trim() })
+    inquiry.value.replies.push(reply)
+    replyForm.body = ''
+  } catch (e) {
+    if (handledAsUnauthorized(e)) return
+    replyError.value =
+      e instanceof ApiError && e.status === 422
+        ? '返信内容を入力してください。'
+        : '返信の投稿に失敗しました。'
+  } finally {
+    replySubmitting.value = false
+  }
+}
 </script>
 
 <template>
   <section>
-    <h1>問い合わせ詳細</h1>
-    <p>ID: {{ id }}</p>
-    <p>この画面は後続 Issue で実装します（S4 / GET /inquiries/:id ほか）。</p>
-    <RouterLink to="/inquiries">← 一覧に戻る</RouterLink>
+    <RouterLink to="/inquiries" class="back">← 一覧に戻る</RouterLink>
+
+    <p v-if="loading" class="note">読み込み中…</p>
+    <p v-else-if="loadError" class="alert error">{{ loadError }}</p>
+
+    <template v-else-if="inquiry">
+      <div class="card">
+        <h1>{{ inquiry.subject }}</h1>
+        <dl class="meta">
+          <dt>氏名</dt>
+          <dd>{{ inquiry.name }}</dd>
+          <dt>メール</dt>
+          <dd>{{ inquiry.email }}</dd>
+          <dt>受信日時</dt>
+          <dd>{{ formatDateTime(inquiry.created_at) }}</dd>
+        </dl>
+        <p class="body">{{ inquiry.body }}</p>
+
+        <div class="status-row">
+          <span class="status-label">ステータス</span>
+          <StatusBadge :status="inquiry.status" />
+          <select :value="inquiry.status" :disabled="statusUpdating" @change="onChangeStatus">
+            <option v-for="o in STATUS_OPTIONS" :key="o.value" :value="o.value">{{ o.label }}</option>
+          </select>
+          <span v-if="statusNote" class="status-note">{{ statusNote }}</span>
+        </div>
+        <p v-if="statusError" class="alert error">{{ statusError }}</p>
+      </div>
+
+      <div class="card">
+        <h2>返信スレッド（{{ inquiry.replies.length }} 件）</h2>
+
+        <ul v-if="inquiry.replies.length" class="thread">
+          <li v-for="r in inquiry.replies" :key="r.id">
+            <div class="reply-head">
+              <span class="staff">{{ r.staff }}</span>
+              <span>{{ formatDateTime(r.created_at) }}</span>
+            </div>
+            <p class="reply-body">{{ r.body }}</p>
+          </li>
+        </ul>
+        <p v-else class="note">まだ返信はありません。</p>
+
+        <form @submit.prevent="onSubmitReply">
+          <label class="field">
+            <span>返信内容</span>
+            <textarea v-model="replyForm.body" />
+          </label>
+          <p v-if="replyError" class="alert error">{{ replyError }}</p>
+          <div class="actions">
+            <button type="submit" :disabled="replySubmitting">返信する</button>
+          </div>
+        </form>
+      </div>
+    </template>
   </section>
 </template>
+
+<style scoped>
+.back {
+  display: inline-block;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.note {
+  color: var(--muted);
+  font-size: 13px;
+}
+.card + .card {
+  margin-top: 20px;
+}
+h2 {
+  font-size: 15px;
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+.meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+.meta dt {
+  color: var(--muted);
+}
+.meta dd {
+  margin: 0;
+}
+.body {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  margin: 0;
+}
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.status-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.status-row select {
+  padding: 6px 8px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font: inherit;
+}
+.status-note {
+  font-size: 12px;
+  color: #157347;
+}
+.thread {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+}
+.thread li {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.reply-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.reply-head .staff {
+  font-weight: 700;
+  color: var(--text);
+}
+.reply-body {
+  font-size: 14px;
+  white-space: pre-wrap;
+  margin: 0;
+}
+</style>

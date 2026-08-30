@@ -2,7 +2,7 @@ require "test_helper"
 
 class InquiryTest < ActiveSupport::TestCase
   test "有効な属性で作成でき、ステータスの初期値は unhandled" do
-    inquiry = Inquiry.create!(name: "顧客", email: "c@example.com", subject: "件名", body: "本文")
+    inquiry = Inquiry.create!(name: "顧客", company: "顧客株式会社", email: "c@example.com", subject: "件名", body: "本文")
     assert inquiry.unhandled?
   end
 
@@ -10,6 +10,7 @@ class InquiryTest < ActiveSupport::TestCase
     inquiry = Inquiry.new
     assert_not inquiry.valid?
     assert inquiry.errors.of_kind?(:name, :blank)
+    assert inquiry.errors.of_kind?(:company, :blank)
     assert inquiry.errors.of_kind?(:email, :blank)
     assert inquiry.errors.of_kind?(:subject, :blank)
     assert inquiry.errors.of_kind?(:body, :blank)

@@ -7,6 +7,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_difference -> { Inquiry.count }, 1 do
       post inquiries_url, params: {
         name: "顧客 花子",
+        company: "花子物産株式会社",
         email: "hanako@example.com",
         subject: "料金プランについて",
         body: "詳しい料金体系を教えてください。"
@@ -17,6 +18,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     body = response.parsed_body
     assert body["id"].present?
     assert_equal "顧客 花子", body["name"]
+    assert_equal "花子物産株式会社", body["company"]
     assert_equal "料金プランについて", body["subject"]
     assert_equal "unhandled", body["status"], "作成時のステータスは常に unhandled"
     assert_equal [], body["replies"]
@@ -24,16 +26,25 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
 
   test "必須項目が欠けていると 422 を返し、登録しない" do
     assert_no_difference -> { Inquiry.count } do
-      post inquiries_url, params: { name: "", email: "", subject: "", body: "" }, as: :json
+      post inquiries_url, params: { name: "", company: "", email: "", subject: "", body: "" }, as: :json
     end
 
     assert_response :unprocessable_entity
     assert response.parsed_body["errors"].present?
   end
 
+  test "会社名が未入力だと 422 を返す" do
+    assert_no_difference -> { Inquiry.count } do
+      post inquiries_url, params: {
+        name: "顧客", email: "c@example.com", subject: "件名", body: "本文"
+      }, as: :json
+    end
+    assert_response :unprocessable_entity
+  end
+
   test "許可外のパラメータ（status）は無視される" do
     post inquiries_url, params: {
-      name: "顧客", email: "c@example.com", subject: "件名", body: "本文",
+      name: "顧客", company: "顧客商事", email: "c@example.com", subject: "件名", body: "本文",
       status: "completed"
     }, as: :json
 
@@ -55,7 +66,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     list = response.parsed_body
     assert_equal Inquiry.count, list.size
-    assert_equal %w[id subject name status created_at].sort, list.first.keys.sort
+    assert_equal %w[id subject name company status created_at].sort, list.first.keys.sort
     assert_equal inquiries(:unhandled_inquiry).id, list.first["id"], "新しい順の先頭"
     assert_equal inquiries(:in_progress_inquiry).id, list.last["id"]
   end
@@ -74,6 +85,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     body = response.parsed_body
     assert_equal "高橋 次郎", body["name"]
+    assert_equal "高橋商店", body["company"]
     assert_equal "takahashi@example.com", body["email"]
     assert_equal "in_progress", body["status"]
 

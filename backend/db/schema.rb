@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_30_083937) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_30_163641) do
   create_table "inquiries", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_30_083937) do
     t.string "status", default: "unhandled", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "company", null: false
   end
 
   create_table "replies", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

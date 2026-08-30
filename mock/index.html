@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InquiryManagement モック</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --panel: #ffffff;
+    --border: #e2e6ea;
+    --text: #1f2933;
+    --muted: #647787;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --danger: #dc2626;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  a { color: var(--primary); }
+
+  /* --- ヘッダー --- */
+  header.appbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .appbar .brand { font-weight: 700; font-size: 15px; }
+  .appbar .brand small { color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .appbar .who { color: var(--muted); font-size: 13px; margin-right: 12px; }
+
+  /* --- レイアウト --- */
+  main {
+    max-width: 880px;
+    margin: 32px auto;
+    padding: 0 20px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+  .card + .card { margin-top: 20px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 14px; color: var(--muted); font-weight: 600; }
+  .page-head { margin-bottom: 20px; }
+  .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+  /* --- フォーム --- */
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  .field textarea { min-height: 120px; resize: vertical; }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-weight: 600;
+  }
+  button.primary { background: var(--primary); color: #fff; }
+  button.primary:hover { background: var(--primary-hover); }
+  button.ghost { background: transparent; border-color: var(--border); color: var(--text); }
+  button.ghost:hover { background: var(--bg); }
+  button.link { background: none; border: none; color: var(--primary); padding: 0; font-weight: 600; }
+  .actions { display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: 8px; }
+
+  /* --- メッセージ --- */
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  .alert.error { background: #fdecec; color: var(--danger); border: 1px solid #f5c2c2; }
+  .alert.success { background: #e7f6ec; color: #157347; border: 1px solid #b3e0c4; }
+
+  /* --- テーブル --- */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    text-align: left;
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: none;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td { padding: 12px; border-bottom: 1px solid var(--border); }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: #f8fafc; }
+  tbody tr:last-child td { border-bottom: none; }
+  .subject-cell { font-weight: 600; color: var(--text); }
+
+  /* --- ステータスバッジ --- */
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.unhandled { background: #fef3c7; color: #92400e; }
+  .badge.in_progress { background: #dbeafe; color: #1e40af; }
+  .badge.completed { background: #dcfce7; color: #166534; }
+
+  /* --- 詳細画面 --- */
+  .meta-grid { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; font-size: 14px; margin-bottom: 16px; }
+  .meta-grid dt { color: var(--muted); }
+  .meta-grid dd { margin: 0; }
+  .inquiry-body {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 14px;
+    white-space: pre-wrap;
+  }
+  .status-row { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
+  .status-row select { width: auto; }
+
+  .thread { list-style: none; padding: 0; margin: 0; }
+  .thread li {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: #fff;
+  }
+  .thread .reply-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .thread .reply-head .staff { font-weight: 700; color: var(--text); }
+  .thread .reply-body { font-size: 14px; white-space: pre-wrap; }
+  .thread-empty { color: var(--muted); font-size: 13px; }
+
+  .back-link { background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 0; margin-bottom: 16px; font-size: 13px; }
+
+  .login-wrap { max-width: 380px; margin: 64px auto; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 14px; }
+  .hint code { background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+
+  .mock-note {
+    max-width: 880px;
+    margin: 0 auto 12px;
+    padding: 6px 20px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================================
+   InquiryManagement — 静的モック（HTML/CSS/JS のみ、バックエンド無し）
+   データはメモリ上のみ。リロードで初期状態に戻る。
+   画面ID: S1 問い合わせフォーム / S2 ログイン / S3 一覧 / S4 詳細
+   ========================================================================= */
+
+// --- 疑似シードデータ ------------------------------------------------------
+const STAFFS = [
+  { id: 1, name: "山田 太郎", email: "yamada@example.com" },
+  { id: 2, name: "佐藤 花子", email: "sato@example.com" },
+  { id: 3, name: "鈴木 一郎", email: "suzuki@example.com" },
+];
+const PASSWORD = "password"; // 全担当者共通（モック用）
+
+const STATUS_LABEL = { unhandled: "未対応", in_progress: "対応中", completed: "対応済み" };
+
+function seedInquiries() {
+  return [
+    {
+      id: 1, name: "田中 実", email: "tanaka@example.com",
+      subject: "請求書の再発行をお願いしたい", status: "unhandled",
+      body: "先月分の請求書を紛失してしまいました。\n再発行は可能でしょうか。宛名は「株式会社タナカ」でお願いします。",
+      created_at: "2026-08-27T10:12:00", replies: [],
+    },
+    {
+      id: 2, name: "高橋 恵子", email: "takahashi@example.com",
+      subject: "ログインできない（パスワードリセット済み）", status: "in_progress",
+      body: "パスワードをリセットしましたが、新しいパスワードでもログインできません。\nエラーコードは E-402 と表示されます。",
+      created_at: "2026-08-26T15:40:00",
+      replies: [
+        { id: 1, staff: "佐藤 花子", body: "お問い合わせありがとうございます。ご登録のメールアドレスを確認したいので、アカウントIDをお知らせいただけますか。", created_at: "2026-08-26T16:05:00" },
+        { id: 2, staff: "佐藤 花子", body: "いただいた情報で調査中です。1営業日以内に折り返しご連絡します。", created_at: "2026-08-27T09:20:00" },
+      ],
+    },
+    {
+      id: 3, name: "伊藤 大輔", email: "ito@example.com",
+      subject: "導入事例の掲載について", status: "completed",
+      body: "貴社サービスの導入事例として、自社の取り組みを掲載したいと考えています。\n手続きを教えてください。",
+      created_at: "2026-08-24T09:03:00",
+      replies: [
+        { id: 3, staff: "鈴木 一郎", body: "ありがとうございます。掲載用のヒアリングシートをお送りしました。ご記入のうえご返送ください。", created_at: "2026-08-24T11:30:00" },
+        { id: 4, staff: "鈴木 一郎", body: "シートを受領しました。公開まで対応いたします。ありがとうございました。", created_at: "2026-08-25T14:10:00" },
+      ],
+    },
+    {
+      id: 4, name: "渡辺 さやか", email: "watanabe@example.com",
+      subject: "プランのアップグレード方法", status: "unhandled",
+      body: "現在ライトプランを利用中です。スタンダードプランへの変更手順と、料金の日割り計算の有無を知りたいです。",
+      created_at: "2026-08-28T08:55:00", replies: [],
+    },
+    {
+      id: 5, name: "中村 健", email: "nakamura@example.com",
+      subject: "APIのレート制限に関する質問", status: "in_progress",
+      body: "APIのレート制限は1分あたり何リクエストでしょうか。\nまた、制限緩和の申請は可能ですか。",
+      created_at: "2026-08-25T18:22:00",
+      replies: [
+        { id: 5, staff: "山田 太郎", body: "現在の上限は 1分あたり60リクエストです。緩和のご要望は用途を添えてご連絡ください。", created_at: "2026-08-26T10:00:00" },
+      ],
+    },
+  ];
+}
+
+// --- アプリ状態 ----------------------------------------------------------
+const state = {
+  inquiries: seedInquiries(),
+  currentStaff: null,   // ログイン中の担当者（null=未ログイン）
+  flash: null,          // 画面遷移をまたいで1回だけ表示するメッセージ
+};
+
+let nextReplyId = 100;
+
+// --- ユーティリティ ------------------------------------------------------
+const app = document.getElementById("app");
+const el = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtDate = (iso) => {
+  const d = new Date(iso);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+const badge = (status) => `<span class="badge ${status}">${STATUS_LABEL[status]}</span>`;
+
+function navigate(hash) { location.hash = hash; }
+function setFlash(type, text) { state.flash = { type, text }; }
+function takeFlash() { const f = state.flash; state.flash = null; return f; }
+
+// --- ヘッダー ------------------------------------------------------------
+function renderAppbar() {
+  const loggedIn = !!state.currentStaff;
+  const bar = el(`
+    <header class="appbar">
+      <div class="brand">InquiryManagement <small>モック</small></div>
+      <div class="right"></div>
+    </header>
+  `);
+  const right = bar.querySelector(".right");
+  if (loggedIn) {
+    const who = el(`<span class="who">${esc(state.currentStaff.name)} でログイン中</span>`);
+    const out = el(`<button class="ghost">ログアウト</button>`);
+    out.onclick = () => { state.currentStaff = null; setFlash("success", "ログアウトしました。"); navigate("#/login"); };
+    right.append(who, out);
+  } else {
+    const toForm = el(`<button class="link">問い合わせフォーム</button>`);
+    toForm.onclick = () => navigate("#/inquiry");
+    const toLogin = el(`<button class="ghost">担当者ログイン</button>`);
+    toLogin.onclick = () => navigate("#/login");
+    right.append(toForm, toLogin);
+  }
+  return bar;
+}
+
+function flashEl() {
+  const f = takeFlash();
+  if (!f) return "";
+  return el(`<div class="mock-note"><div class="alert ${f.type}" style="max-width:none">${esc(f.text)}</div></div>`);
+}
+
+// =========================================================================
+//  S1: 問い合わせフォーム画面（ログイン不要）
+// =========================================================================
+function screenInquiryForm() {
+  const wrap = el(`<main>
+    <div class="page-head">
+      <h1>お問い合わせ</h1>
+      <p>ご質問・ご依頼内容をご記入のうえ送信してください。担当者より折り返しご連絡します。</p>
+    </div>
+    <div class="card">
+      <div class="slot-alert"></div>
+      <form>
+        <div class="field"><label>氏名</label><input name="name" autocomplete="off"></div>
+        <div class="field"><label>メールアドレス</label><input name="email" type="email" autocomplete="off"></div>
+        <div class="field"><label>件名</label><input name="subject" autocomplete="off"></div>
+        <div class="field"><label>内容</label><textarea name="body"></textarea></div>
+        <div class="actions">
+          <button type="submit" class="primary">送信</button>
+        </div>
+      </form>
+    </div>
+  </main>`);
+
+  const form = wrap.querySelector("form");
+  const slot = wrap.querySelector(".slot-alert");
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    slot.innerHTML = "";
+    const data = Object.fromEntries(new FormData(form).entries());
+    const missing = ["name", "email", "subject", "body"].filter((k) => !data[k].trim());
+    if (missing.length) {
+      slot.append(el(`<div class="alert error">すべての項目を入力してください。</div>`));
+      return;
+    }
+    const id = Math.max(0, ...state.inquiries.map((i) => i.id)) + 1;
+    state.inquiries.unshift({
+      id, name: data.name.trim(), email: data.email.trim(),
+      subject: data.subject.trim(), body: data.body.trim(),
+      status: "unhandled", created_at: new Date().toISOString(), replies: [],
+    });
+    form.reset();
+    slot.append(el(`<div class="alert success">お問い合わせを送信しました。担当者からの連絡をお待ちください。</div>`));
+  };
+
+  return wrap;
+}
+
+// =========================================================================
+//  S2: ログイン画面（ログイン不要）
+// =========================================================================
+function screenLogin() {
+  const wrap = el(`<main>
+    <div class="login-wrap">
+      <div class="card">
+        <h1>担当者ログイン</h1>
+        <h2>メールアドレスとパスワードでログインしてください</h2>
+        <div class="slot-alert"></div>
+        <form>
+          <div class="field"><label>メールアドレス</label><input name="email" type="email" autocomplete="off"></div>
+          <div class="field"><label>パスワード</label><input name="password" type="password" autocomplete="off"></div>
+          <div class="actions"><button type="submit" class="primary">ログイン</button></div>
+        </form>
+        <div class="hint">
+          モック用アカウント：<br>
+          <code>yamada@example.com</code> / <code>sato@example.com</code> / <code>suzuki@example.com</code><br>
+          パスワードはいずれも <code>password</code>
+        </div>
+      </div>
+    </div>
+  </main>`);
+
+  const form = wrap.querySelector("form");
+  const slot = wrap.querySelector(".slot-alert");
+
+  const pending = takeFlash();
+  if (pending) slot.append(el(`<div class="alert ${pending.type}">${esc(pending.text)}</div>`));
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    slot.innerHTML = "";
+    const { email, password } = Object.fromEntries(new FormData(form).entries());
+    const staff = STAFFS.find((s) => s.email === email.trim().toLowerCase());
+    if (!staff || password !== PASSWORD) {
+      slot.append(el(`<div class="alert error">メールアドレスまたはパスワードが正しくありません。</div>`));
+      return;
+    }
+    state.currentStaff = staff;
+    setFlash("success", `ようこそ、${staff.name} さん`);
+    navigate("#/inquiries");
+  };
+
+  return wrap;
+}
+
+// =========================================================================
+//  S3: 問い合わせ一覧画面（ログイン必須）
+// =========================================================================
+function screenInquiryList() {
+  const rows = state.inquiries.map((i) => `
+    <tr data-id="${i.id}">
+      <td class="subject-cell">${esc(i.subject)}</td>
+      <td>${esc(i.name)}</td>
+      <td>${badge(i.status)}</td>
+      <td>${fmtDate(i.created_at)}</td>
+      <td style="text-align:right;color:var(--muted)">${i.replies.length ? i.replies.length + " 件の返信" : "—"}</td>
+    </tr>`).join("");
+
+  const wrap = el(`<main>
+    <div class="page-head">
+      <h1>問い合わせ一覧</h1>
+      <p>登録されているすべての問い合わせ（${state.inquiries.length} 件）。行をクリックすると詳細を表示します。</p>
+    </div>
+    <div class="card" style="padding:0">
+      <table>
+        <thead><tr><th>件名</th><th>送信者</th><th>ステータス</th><th>受信日時</th><th style="text-align:right">返信</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </main>`);
+
+  wrap.querySelectorAll("tbody tr").forEach((tr) => {
+    tr.onclick = () => navigate(`#/inquiries/${tr.dataset.id}`);
+  });
+
+  return wrap;
+}
+
+// =========================================================================
+//  S4: 問い合わせ詳細画面（ログイン必須）
+// =========================================================================
+function screenInquiryDetail(id) {
+  const inquiry = state.inquiries.find((i) => i.id === Number(id));
+  if (!inquiry) {
+    const nf = el(`<main><div class="card"><p>指定された問い合わせが見つかりません。</p></div></main>`);
+    return nf;
+  }
+
+  const wrap = el(`<main>
+    <button class="back-link">← 一覧に戻る</button>
+
+    <div class="card">
+      <h1>${esc(inquiry.subject)}</h1>
+      <dl class="meta-grid">
+        <dt>氏名</dt><dd>${esc(inquiry.name)}</dd>
+        <dt>メール</dt><dd>${esc(inquiry.email)}</dd>
+        <dt>受信日時</dt><dd>${fmtDate(inquiry.created_at)}</dd>
+      </dl>
+      <div class="inquiry-body">${esc(inquiry.body)}</div>
+      <div class="status-row">
+        <label style="font-size:13px;font-weight:600">ステータス</label>
+        <select class="status-select">
+          ${Object.entries(STATUS_LABEL).map(([v, l]) => `<option value="${v}" ${v === inquiry.status ? "selected" : ""}>${l}</option>`).join("")}
+        </select>
+        <span class="status-saved" style="font-size:12px;color:#157347"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>返信スレッド（${inquiry.replies.length} 件）</h2>
+      <ul class="thread"></ul>
+      <div class="slot-alert"></div>
+      <form>
+        <div class="field"><label>返信内容</label><textarea name="body"></textarea></div>
+        <div class="actions"><button type="submit" class="primary">返信する</button></div>
+      </form>
+    </div>
+  </main>`);
+
+  wrap.querySelector(".back-link").onclick = () => navigate("#/inquiries");
+
+  // ステータス変更（選択時点で即更新）
+  const sel = wrap.querySelector(".status-select");
+  const saved = wrap.querySelector(".status-saved");
+  sel.onchange = () => {
+    inquiry.status = sel.value;
+    saved.textContent = "✓ 更新しました";
+    setTimeout(() => (saved.textContent = ""), 1600);
+  };
+
+  // 返信スレッド描画
+  const thread = wrap.querySelector(".thread");
+  function renderThread() {
+    thread.innerHTML = "";
+    if (!inquiry.replies.length) {
+      thread.append(el(`<li class="thread-empty" style="border:none">まだ返信はありません。</li>`));
+      return;
+    }
+    inquiry.replies.forEach((r) => {
+      thread.append(el(`<li>
+        <div class="reply-head"><span class="staff">${esc(r.staff)}</span><span>${fmtDate(r.created_at)}</span></div>
+        <div class="reply-body">${esc(r.body)}</div>
+      </li>`));
+    });
+  }
+  renderThread();
+
+  // 返信投稿
+  const form = wrap.querySelector("form");
+  const slot = wrap.querySelector(".slot-alert");
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    slot.innerHTML = "";
+    const body = new FormData(form).get("body").trim();
+    if (!body) {
+      slot.append(el(`<div class="alert error">返信内容を入力してください。</div>`));
+      return;
+    }
+    inquiry.replies.push({
+      id: nextReplyId++, staff: state.currentStaff.name,
+      body, created_at: new Date().toISOString(),
+    });
+    form.reset();
+    renderThread();
+    wrap.querySelector(".card:last-child h2").textContent = `返信スレッド（${inquiry.replies.length} 件）`;
+  };
+
+  return wrap;
+}
+
+// =========================================================================
+//  ルーター
+// =========================================================================
+function requireLogin() {
+  if (!state.currentStaff) {
+    setFlash("error", "ログインが必要です。");
+    navigate("#/login");
+    return false;
+  }
+  return true;
+}
+
+function render() {
+  const hash = location.hash || "#/inquiry";
+  const parts = hash.replace(/^#\//, "").split("/"); // ["inquiries", "3"]
+
+  app.innerHTML = "";
+  app.append(renderAppbar());
+
+  const fe = flashEl();
+  if (fe) app.append(fe);
+
+  let view;
+  if (parts[0] === "inquiry") {
+    view = screenInquiryForm();
+  } else if (parts[0] === "login") {
+    view = screenLogin();
+  } else if (parts[0] === "inquiries" && parts[1]) {
+    if (!requireLogin()) return;
+    view = screenInquiryDetail(parts[1]);
+  } else if (parts[0] === "inquiries") {
+    if (!requireLogin()) return;
+    view = screenInquiryList();
+  } else {
+    navigate("#/inquiry");
+    return;
+  }
+  app.append(view);
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>

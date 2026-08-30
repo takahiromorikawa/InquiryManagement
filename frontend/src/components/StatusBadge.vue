@@ -18,11 +18,12 @@ defineProps({
 <style scoped>
 .badge {
   display: inline-block;
-  font-size: 12px;
+  font-size: 0.8rem;
   font-weight: 600;
-  padding: 2px 10px;
+  padding: 3px 12px;
   border-radius: 999px;
   white-space: nowrap;
+  line-height: 1.5;
 }
 .badge.unhandled {
   background: #fef3c7;

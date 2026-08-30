@@ -43,10 +43,12 @@ async function onSubmit() {
 
 <template>
   <section class="login">
-    <div class="card">
+    <div class="page-head">
       <h1>担当者ログイン</h1>
       <p class="lead">メールアドレスとパスワードでログインしてください。</p>
+    </div>
 
+    <div class="card">
       <p v-if="error" class="alert error">{{ error }}</p>
 
       <form @submit.prevent="onSubmit">
@@ -76,23 +78,19 @@ async function onSubmit() {
 
 <style scoped>
 .login {
-  max-width: 380px;
-  margin: 48px auto 0;
-}
-.lead {
-  color: var(--muted);
-  font-size: 13px;
-  margin: 0 0 20px;
+  max-width: 420px;
+  margin: 24px auto 0;
 }
 .hint {
-  margin: 16px 0 0;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.7;
+  margin: 18px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.8;
 }
 .hint code {
-  background: var(--bg);
-  padding: 1px 5px;
+  background: var(--surface-muted);
+  padding: 1px 6px;
   border-radius: 4px;
+  font-size: 0.85em;
 }
 </style>

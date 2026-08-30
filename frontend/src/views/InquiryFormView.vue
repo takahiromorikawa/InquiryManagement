@@ -48,10 +48,12 @@ async function onSubmit() {
 
 <template>
   <section>
-    <h1>お問い合わせ</h1>
-    <p class="lead">
-      ご質問・ご依頼内容をご記入のうえ送信してください。担当者より折り返しご連絡します。
-    </p>
+    <div class="page-head">
+      <h1>お問い合わせ</h1>
+      <p class="lead">
+        ご質問・ご依頼内容をご記入のうえ送信してください。担当者より折り返しご連絡します。
+      </p>
+    </div>
 
     <div class="card">
       <p v-if="done" class="alert success">
@@ -74,10 +76,3 @@ async function onSubmit() {
   </section>
 </template>
 
-<style scoped>
-.lead {
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 20px;
-}
-</style>

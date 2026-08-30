@@ -39,3 +39,58 @@ button:disabled {
   opacity: 0.6;
   cursor: default;
 }
+
+/* --- 画面共通のユーティリティ --- */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  background: #fff;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.field > span {
+  font-size: 13px;
+  font-weight: 600;
+}
+.field input,
+.field textarea,
+.field select {
+  padding: 9px 11px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+.field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.alert {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.alert.error {
+  background: #fdecec;
+  color: #dc2626;
+  border: 1px solid #f5c2c2;
+}
+.alert.success {
+  background: #e7f6ec;
+  color: #157347;
+  border: 1px solid #b3e0c4;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,9 +1,10 @@
 <script setup>
-import { RouterView, RouterLink, useRouter } from 'vue-router'
+import { RouterView, RouterLink, useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 async function onLogout() {
   await auth.logout()
@@ -33,19 +34,13 @@ async function onLogout() {
         </svg>
       </RouterLink>
 
-      <nav>
-        <template v-if="auth.isLoggedIn">
-          <span class="user">
-            <span class="avatar">{{ auth.staff?.name?.slice(0, 1) }}</span>
-            <span class="user-name">{{ auth.staff?.name }}</span>
-          </span>
-          <RouterLink to="/inquiries" class="nav-link">問い合わせ一覧</RouterLink>
-          <button type="button" class="ghost nav-btn" @click="onLogout">ログアウト</button>
-        </template>
-        <template v-else>
-          <RouterLink to="/" class="nav-link">問い合わせフォーム</RouterLink>
-          <RouterLink to="/login" class="nav-btn nav-btn-primary">担当者ログイン</RouterLink>
-        </template>
+      <nav v-if="auth.isLoggedIn">
+        <span class="user">
+          <span class="avatar">{{ auth.staff?.name?.slice(0, 1) }}</span>
+          <span class="user-name">{{ auth.staff?.name }}</span>
+        </span>
+        <RouterLink to="/inquiries" class="nav-link">問い合わせ一覧</RouterLink>
+        <button type="button" class="ghost nav-btn" @click="onLogout">ログアウト</button>
       </nav>
     </div>
   </header>
@@ -53,6 +48,19 @@ async function onLogout() {
   <main>
     <RouterView />
   </main>
+
+  <footer class="appfoot">
+    <div class="appfoot-inner">
+      <span class="muted">問い合わせ管理システム</span>
+      <RouterLink
+        v-if="!auth.isLoggedIn && route.name !== 'login'"
+        to="/login"
+        class="foot-link"
+      >
+        担当者ログイン
+      </RouterLink>
+    </div>
+  </footer>
 </template>
 
 <style scoped>
@@ -72,6 +80,7 @@ async function onLogout() {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  min-height: 40px;
 }
 .mark {
   display: inline-flex;
@@ -114,15 +123,6 @@ nav {
   border-radius: var(--radius-sm);
   line-height: 1.5;
 }
-.nav-btn-primary {
-  background: var(--primary);
-  color: #fff;
-  border: 1px solid var(--primary);
-}
-.nav-btn-primary:hover {
-  background: var(--primary-hover);
-  text-decoration: none;
-}
 
 .user {
   display: inline-flex;
@@ -148,9 +148,33 @@ nav {
 }
 
 main {
+  flex: 1 0 auto;
+  width: 100%;
   max-width: 960px;
-  margin: 40px auto 64px;
+  margin: 40px auto 56px;
   padding: 0 24px;
+}
+
+.appfoot {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.appfoot-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+.foot-link {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.foot-link:hover {
+  color: var(--primary);
 }
 
 @media (max-width: 560px) {
@@ -158,7 +182,8 @@ main {
     display: none;
   }
   .appbar-inner,
-  main {
+  main,
+  .appfoot-inner {
     padding-inline: 16px;
   }
 }

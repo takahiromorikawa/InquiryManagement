@@ -43,6 +43,12 @@ body {
   background: var(--bg);
 }
 
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 h1,
 h2,
 h3 {

@@ -89,4 +89,47 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     get inquiry_url(id: 999_999)
     assert_response :not_found
   end
+
+  # --- PATCH /inquiries/:id（認証必須 / UC6） --------------------------
+
+  test "PATCH /inquiries/:id は未ログインだと 401" do
+    inquiry = inquiries(:unhandled_inquiry)
+    patch inquiry_url(inquiry), params: { status: "in_progress" }, as: :json
+    assert_response :unauthorized
+    assert_equal "unhandled", inquiry.reload.status
+  end
+
+  test "PATCH /inquiries/:id はステータスを更新し、更新後の詳細を返す" do
+    login_as staffs(:yamada)
+    inquiry = inquiries(:unhandled_inquiry)
+
+    patch inquiry_url(inquiry), params: { status: "completed" }, as: :json
+
+    assert_response :success
+    assert_equal "completed", response.parsed_body["status"]
+    assert_equal "completed", inquiry.reload.status
+    assert response.parsed_body.key?("replies")
+  end
+
+  test "PATCH /inquiries/:id は対応済みから未対応へ戻せる" do
+    login_as staffs(:yamada)
+    inquiry = inquiries(:in_progress_inquiry)
+    patch inquiry_url(inquiry), params: { status: "unhandled" }, as: :json
+    assert_response :success
+    assert_equal "unhandled", inquiry.reload.status
+  end
+
+  test "PATCH /inquiries/:id は定義外のステータスで 422 を返し変更しない" do
+    login_as staffs(:yamada)
+    inquiry = inquiries(:unhandled_inquiry)
+    patch inquiry_url(inquiry), params: { status: "archived" }, as: :json
+    assert_response :unprocessable_entity
+    assert_equal "unhandled", inquiry.reload.status
+  end
+
+  test "PATCH /inquiries/:id は存在しないIDで 404" do
+    login_as staffs(:yamada)
+    patch inquiry_url(id: 999_999), params: { status: "completed" }, as: :json
+    assert_response :not_found
+  end
 end

@@ -14,8 +14,22 @@ class InquiriesController < ApplicationController
   def show
     inquiry = Inquiry.includes(replies: :staff).find(params[:id])
     render json: detail_json(inquiry)
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: "問い合わせが見つかりません" }, status: :not_found
+  end
+
+  # PATCH /inquiries/:id
+  # 対応ステータスを変更する（UC6）。前後関係の制約はない。
+  def update
+    inquiry = Inquiry.includes(replies: :staff).find(params[:id])
+    new_status = params[:status].to_s
+
+    unless Inquiry.statuses.key?(new_status)
+      return render json: {
+        error: "status は #{Inquiry.statuses.keys.join(' / ')} のいずれかを指定してください"
+      }, status: :unprocessable_entity
+    end
+
+    inquiry.update!(status: new_status)
+    render json: detail_json(inquiry)
   end
 
   # POST /inquiries

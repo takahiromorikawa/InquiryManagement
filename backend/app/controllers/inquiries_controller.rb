@@ -1,4 +1,7 @@
 class InquiriesController < ApplicationController
+  # 問い合わせ投稿は顧客がログインせずに行う。
+  skip_before_action :require_login, only: :create
+
   # POST /inquiries
   # 顧客がログイン不要で問い合わせを送信する（UC1）。
   # ステータスはモデルのデフォルトで unhandled になる。

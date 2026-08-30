@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+unhandled_inquiry:
+  name: 田中 太郎
+  email: tanaka@example.com
+  subject: ログインできない
+  body: パスワードを入力してもログイン画面から進めません。
+  status: unhandled
+
+in_progress_inquiry:
+  name: 高橋 次郎
+  email: takahashi@example.com
+  subject: 請求書の宛名を変更したい
+  body: 発行済みの請求書の宛名を修正してもらえますか。
+  status: in_progress

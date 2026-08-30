@@ -33,15 +33,62 @@ flowchart LR
 
 | 分類 | 技術 |
 |---|---|
-| バックエンド | Ruby on Rails（APIモード） |
-| フロントエンド | Vue.js（TypeScript） / Vite |
-| データベース | MySQL |
+| バックエンド | Ruby 3.3.9 / Ruby on Rails 7.1（APIモード） |
+| フロントエンド | Vue.js（TypeScript） / Vite ※未着手 |
+| データベース | MySQL 8.0（Docker Compose で起動） |
 
 詳細は[技術スタック](docs/tech-stack.md)を参照。
 
+## ディレクトリ構成
+
+```
+InquiryManagement/
+├── backend/            Rails APIバックエンド
+├── docker-compose.yml  ローカル開発用の MySQL 8.0
+└── docs/               設計ドキュメント
+```
+
+※フロントエンド（Vue）は別Issueで `frontend/` に追加予定。
+
 ## セットアップ
 
-環境構築手順は、実装の進行に合わせて本セクションに追記する。
+### 前提
+
+- Ruby 3.3.9（`backend/.ruby-version` で固定。rbenv 等で導入）
+- Docker（MySQL の起動に使用）
+
+### 1. データベースの起動
+
+リポジトリ直下で:
+
+```bash
+docker compose up -d
+```
+
+MySQL 8.0 が `localhost:3306` で起動する（DB名: `inquiry_management_development` / ユーザー: `root` / パスワード: `password`）。接続情報は [backend/config/database.yml](backend/config/database.yml) を参照。環境変数（`DB_HOST` / `DB_PORT` / `DB_USERNAME` / `DB_PASSWORD` / `DB_NAME`）で上書きできる。
+
+> ローカルに Homebrew などの MySQL が `3306` で起動していると競合する。その場合は停止（例: `brew services stop mysql@8.0`）してから、上記のデフォルトポートで起動し直すこと。
+
+### 2. バックエンドの起動
+
+```bash
+cd backend
+bundle install
+bin/rails db:prepare   # 初回のみ（マイグレーション + seed）
+bin/rails server       # http://localhost:3000
+```
+
+> macOS で `mysql2` gem のビルドに失敗する場合は、Homebrew の MySQL クライアントを指定する:
+> ```bash
+> bundle config set --local build.mysql2 "--with-mysql-config=$(brew --prefix mysql@8.0)/bin/mysql_config"
+> bundle install
+> ```
+
+`bin/rails db:seed` で担当者（Staff）の初期データが3件作成される（ログイン用パスワードはいずれも `password`）。
+
+### 3. フロントエンドの起動
+
+未実装（別Issueで追加予定。ポートは `5173`）。
 
 ## 開発フロー
 

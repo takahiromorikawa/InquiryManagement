@@ -1,0 +1,41 @@
+:root {
+  --text: #1f2933;
+  --muted: #647787;
+  --border: #e2e6ea;
+  --bg: #f4f6f8;
+
+  font: 14px/1.6 -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic',
+    'Segoe UI', sans-serif;
+  color: var(--text);
+  background: #fff;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+
+a {
+  color: #2563eb;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
+button[type='submit'] {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

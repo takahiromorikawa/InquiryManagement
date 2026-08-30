@@ -4,8 +4,10 @@ first_reply:
   inquiry: in_progress_inquiry
   staff: yamada
   body: お問い合わせありがとうございます。確認いたします。
+  created_at: <%= 2.hours.ago.to_fs(:db) %>
 
 second_reply:
   inquiry: in_progress_inquiry
   staff: sato
   body: 宛名を修正した請求書を再送しました。
+  created_at: <%= 1.hour.ago.to_fs(:db) %>

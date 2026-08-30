@@ -1,6 +1,8 @@
 require "test_helper"
 
 class InquiriesControllerTest < ActionDispatch::IntegrationTest
+  # --- POST /inquiries（認証不要 / UC1） ---------------------------------
+
   test "POST /inquiries は問い合わせを登録し 201 と登録内容を返す" do
     assert_difference -> { Inquiry.count }, 1 do
       post inquiries_url, params: {
@@ -17,6 +19,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "顧客 花子", body["name"]
     assert_equal "料金プランについて", body["subject"]
     assert_equal "unhandled", body["status"], "作成時のステータスは常に unhandled"
+    assert_equal [], body["replies"]
   end
 
   test "必須項目が欠けていると 422 を返し、登録しない" do
@@ -36,5 +39,54 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :created
     assert_equal "unhandled", response.parsed_body["status"]
+  end
+
+  # --- GET /inquiries（認証必須 / UC3） ---------------------------------
+
+  test "GET /inquiries は未ログインだと 401" do
+    get inquiries_url
+    assert_response :unauthorized
+  end
+
+  test "GET /inquiries はログイン済みなら一覧を受信日時の新しい順で返す" do
+    login_as staffs(:yamada)
+    get inquiries_url
+
+    assert_response :success
+    list = response.parsed_body
+    assert_equal Inquiry.count, list.size
+    assert_equal %w[id subject name status created_at].sort, list.first.keys.sort
+    assert_equal inquiries(:unhandled_inquiry).id, list.first["id"], "新しい順の先頭"
+    assert_equal inquiries(:in_progress_inquiry).id, list.last["id"]
+  end
+
+  # --- GET /inquiries/:id（認証必須 / UC4） ----------------------------
+
+  test "GET /inquiries/:id は未ログインだと 401" do
+    get inquiry_url(inquiries(:in_progress_inquiry))
+    assert_response :unauthorized
+  end
+
+  test "GET /inquiries/:id は本体と返信スレッド（担当者名つき・古い順）を返す" do
+    login_as staffs(:yamada)
+    get inquiry_url(inquiries(:in_progress_inquiry))
+
+    assert_response :success
+    body = response.parsed_body
+    assert_equal "高橋 次郎", body["name"]
+    assert_equal "takahashi@example.com", body["email"]
+    assert_equal "in_progress", body["status"]
+
+    replies = body["replies"]
+    assert_equal 2, replies.size
+    assert_equal ["お問い合わせありがとうございます。確認いたします。",
+                  "宛名を修正した請求書を再送しました。"], replies.map { |r| r["body"] }
+    assert_equal ["山田 太郎", "佐藤 花子"], replies.map { |r| r["staff"] }
+  end
+
+  test "GET /inquiries/:id は存在しないIDで 404" do
+    login_as staffs(:yamada)
+    get inquiry_url(id: 999_999)
+    assert_response :not_found
   end
 end

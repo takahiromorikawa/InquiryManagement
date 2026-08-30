@@ -5,6 +5,10 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # 担当者ログイン／ログアウト（セッション認証 / UC2, UC7）
+  post   "login"  => "sessions#create"
+  delete "logout" => "sessions#destroy"
+
   # 問い合わせ投稿（顧客・認証不要 / UC1）。一覧・詳細などは別Issueで追加する。
   resources :inquiries, only: %i[create]
 end

@@ -1,6 +1,6 @@
 # frontend（InquiryManagement）
 
-問い合わせ管理アプリのフロントエンド。Vue 3 + TypeScript + Vite + Vue Router + Pinia。
+問い合わせ管理アプリのフロントエンド。Vue 3（JavaScript）+ Vite + Vue Router + Pinia。
 
 バックエンド（Rails API）は別ディレクトリ [`../backend`](../backend) で動かす。API 仕様は [`../docs/api.md`](../docs/api.md)、画面仕様は [`../docs/screens.md`](../docs/screens.md) を参照。
 
@@ -25,7 +25,7 @@ npm run dev
 ## その他のコマンド
 
 ```bash
-npm run build     # 型チェック（vue-tsc）+ 本番ビルド
+npm run build     # 本番ビルド
 npm run preview   # ビルド結果のプレビュー
 ```
 

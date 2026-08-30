@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 // S2: ログイン画面（UC2）。疎通確認のため最小限の実装を入れている。
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'

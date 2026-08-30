@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
-const routes: RouteRecordRaw[] = [
+const routes = [
   {
     path: '/',
     name: 'inquiry-form',

@@ -1,7 +1,7 @@
-<script setup lang="ts">
+<script setup>
 // S4: 問い合わせ詳細画面（UC4/UC5/UC6）
 // この Issue ではルーティングの雛形のみ。詳細・返信・ステータス変更は後続 Issue。
-defineProps<{ id: string }>()
+defineProps({ id: { type: String, required: true } })
 </script>
 
 <template>

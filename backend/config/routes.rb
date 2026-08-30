@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   post   "login"  => "sessions#create"
   delete "logout" => "sessions#destroy"
 
-  # 問い合わせ: 投稿（顧客・認証不要 / UC1）、一覧・詳細（担当者・認証必須 / UC3, UC4）。
-  resources :inquiries, only: %i[index show create]
+  # 問い合わせ: 投稿（顧客・認証不要 / UC1）、一覧・詳細（UC3, UC4）、
+  # ステータス変更（UC6）、ネストした返信投稿（UC5）。投稿以外は認証必須。
+  resources :inquiries, only: %i[index show create update] do
+    resources :replies, only: %i[create]
+  end
 end

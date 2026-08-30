@@ -15,7 +15,7 @@ async function onLogout() {
 <template>
   <header class="appbar">
     <div class="appbar-inner">
-      <RouterLink to="/" class="mark" aria-label="ホーム">
+      <RouterLink :to="auth.isLoggedIn ? '/inquiries' : '/'" class="mark" aria-label="ホーム">
         <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true">
           <defs>
             <linearGradient id="g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
@@ -39,7 +39,6 @@ async function onLogout() {
           <span class="avatar">{{ auth.staff?.name?.slice(0, 1) }}</span>
           <span class="user-name">{{ auth.staff?.name }}</span>
         </span>
-        <RouterLink to="/inquiries" class="nav-link">問い合わせ一覧</RouterLink>
         <button type="button" class="ghost nav-btn" @click="onLogout">ログアウト</button>
       </nav>
     </div>
@@ -49,16 +48,9 @@ async function onLogout() {
     <RouterView />
   </main>
 
-  <footer class="appfoot">
+  <footer v-if="!auth.isLoggedIn && route.name !== 'login'" class="appfoot">
     <div class="appfoot-inner">
-      <span class="muted">問い合わせ管理システム</span>
-      <RouterLink
-        v-if="!auth.isLoggedIn && route.name !== 'login'"
-        to="/login"
-        class="foot-link"
-      >
-        担当者ログイン
-      </RouterLink>
+      <RouterLink to="/login" class="foot-link">担当者ログイン</RouterLink>
     </div>
   </footer>
 </template>
@@ -95,22 +87,6 @@ nav {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.nav-link {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-}
-.nav-link:hover {
-  color: var(--text);
-  background: var(--surface-muted);
-  text-decoration: none;
-}
-.nav-link.router-link-exact-active {
-  color: var(--primary);
 }
 
 .nav-btn {
@@ -165,8 +141,7 @@ main {
   padding: 18px 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-end;
   font-size: 0.85rem;
 }
 .foot-link {

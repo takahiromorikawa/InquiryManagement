@@ -34,7 +34,7 @@ flowchart LR
 | 分類 | 技術 |
 |---|---|
 | バックエンド | Ruby 3.3.9 / Ruby on Rails 7.1（APIモード） |
-| フロントエンド | Vue.js（TypeScript） / Vite ※未着手 |
+| フロントエンド | Vue.js（JavaScript） / Vite / Vue Router / Pinia |
 | データベース | MySQL 8.0（Docker Compose で起動） |
 
 詳細は[技術スタック](docs/tech-stack.md)を参照。
@@ -44,11 +44,10 @@ flowchart LR
 ```
 InquiryManagement/
 ├── backend/            Rails APIバックエンド
+├── frontend/           Vue フロントエンド
 ├── docker-compose.yml  ローカル開発用の MySQL 8.0
 └── docs/               設計ドキュメント
 ```
-
-※フロントエンド（Vue）は別Issueで `frontend/` に追加予定。
 
 ## セットアップ
 
@@ -88,7 +87,13 @@ bin/rails server       # http://localhost:3000
 
 ### 3. フロントエンドの起動
 
-未実装（別Issueで追加予定。ポートは `5173`）。
+```bash
+cd frontend
+npm install
+npm run dev           # http://localhost:5173
+```
+
+詳細は [frontend/README.md](frontend/README.md) を参照。
 
 ## 開発フロー
 

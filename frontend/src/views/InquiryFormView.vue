@@ -1,8 +1,7 @@
-<script setup lang="ts">
+<script setup>
 // S1: 問い合わせフォーム画面（顧客向け・ログイン不要 / UC1）
 import { reactive, ref } from 'vue'
 import { api, ApiError } from '../lib/api'
-import type { InquiryDetail } from '../types'
 
 const form = reactive({ name: '', email: '', subject: '', body: '' })
 
@@ -10,12 +9,7 @@ const submitting = ref(false)
 const error = ref('')
 const done = ref(false)
 
-const FIELDS: {
-  key: keyof typeof form
-  label: string
-  type: 'input' | 'textarea'
-  inputType?: string
-}[] = [
+const FIELDS = [
   { key: 'name', label: '氏名', type: 'input' },
   { key: 'email', label: 'メールアドレス', type: 'input', inputType: 'email' },
   { key: 'subject', label: '件名', type: 'input' },
@@ -33,7 +27,7 @@ async function onSubmit() {
 
   submitting.value = true
   try {
-    await api.post<InquiryDetail>('/inquiries', {
+    await api.post('/inquiries', {
       name: form.name.trim(),
       email: form.email.trim(),
       subject: form.subject.trim(),

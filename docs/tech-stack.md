@@ -14,11 +14,10 @@
 
 ## フロントエンド
 
-- Vue.js（TypeScript）
+- Vue.js（JavaScript。TypeScript は使わない）
 - Vite（開発サーバー・ビルドツール）
 - Vue Router（画面遷移、未ログイン時のリダイレクト制御）
-
-※フロントエンドは未着手（別Issueで `frontend/` に追加する）。
+- Pinia（認証状態などの状態管理）
 
 ## データベース
 

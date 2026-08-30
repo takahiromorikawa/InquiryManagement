@@ -6,10 +6,7 @@
 const BASE_URL = import.meta.env.VITE_API_BASE ?? 'http://localhost:3000'
 
 export class ApiError extends Error {
-  status: number
-  body: unknown
-
-  constructor(status: number, body: unknown) {
+  constructor(status, body) {
     super(`API request failed with status ${status}`)
     this.name = 'ApiError'
     this.status = status
@@ -17,7 +14,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+async function request(method, path, body) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     credentials: 'include',
@@ -31,12 +28,12 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   if (!res.ok) {
     throw new ApiError(res.status, data)
   }
-  return data as T
+  return data
 }
 
 export const api = {
-  get: <T>(path: string) => request<T>('GET', path),
-  post: <T>(path: string, body?: unknown) => request<T>('POST', path, body),
-  patch: <T>(path: string, body?: unknown) => request<T>('PATCH', path, body),
-  delete: <T>(path: string) => request<T>('DELETE', path),
+  get: (path) => request('GET', path),
+  post: (path, body) => request('POST', path, body),
+  patch: (path, body) => request('PATCH', path, body),
+  delete: (path) => request('DELETE', path),
 }

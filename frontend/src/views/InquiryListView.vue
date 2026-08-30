@@ -1,13 +1,13 @@
-<script setup lang="ts">
+<script setup>
 // S3: 問い合わせ一覧画面（UC3）。この Issue では API 疎通確認のため
 // GET /inquiries を呼び、件数と件名だけを表示する。表組み等は後続 Issue。
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, ApiError } from '../lib/api'
 import { useAuthStore } from '../stores/auth'
-import { STATUS_LABEL, type InquiryListItem } from '../types'
+import { STATUS_LABEL } from '../constants'
 
-const inquiries = ref<InquiryListItem[]>([])
+const inquiries = ref([])
 const loading = ref(true)
 const error = ref('')
 const auth = useAuthStore()
@@ -15,7 +15,7 @@ const router = useRouter()
 
 onMounted(async () => {
   try {
-    inquiries.value = await api.get<InquiryListItem[]>('/inquiries')
+    inquiries.value = await api.get('/inquiries')
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) {
       auth.clear()

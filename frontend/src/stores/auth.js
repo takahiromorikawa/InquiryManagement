@@ -1,27 +1,26 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { api } from '../lib/api'
-import type { Staff } from '../types'
 
 const STORAGE_KEY = 'inquiry_management_staff'
 
 // バックエンドにセッション確認用エンドポイントが無いため、ログイン中の担当者情報は
 // sessionStorage にミラーしておき、リロード後もルートガードを通す。
 // 実際の認可はサーバー側セッションが担い、API が 401 を返したらここをクリアする。
-function loadStaff(): Staff | null {
+function loadStaff() {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as Staff) : null
+    return raw ? JSON.parse(raw) : null
   } catch {
     return null
   }
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const staff = ref<Staff | null>(loadStaff())
+  const staff = ref(loadStaff())
   const isLoggedIn = computed(() => staff.value !== null)
 
-  function setStaff(value: Staff | null) {
+  function setStaff(value) {
     staff.value = value
     try {
       if (value) sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value))
@@ -31,8 +30,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function login(email: string, password: string) {
-    const me = await api.post<Staff>('/login', { email, password })
+  async function login(email, password) {
+    const me = await api.post('/login', { email, password })
     setStaff(me)
   }
 

@@ -48,17 +48,17 @@ class InquiriesController < ApplicationController
   private
 
   def inquiry_params
-    params.permit(:name, :email, :subject, :body)
+    params.permit(:name, :company, :email, :subject, :body)
   end
 
   # 一覧用: 受信箱の行に必要な項目だけ。
   def list_json(inquiry)
-    inquiry.as_json(only: %i[id subject name status created_at])
+    inquiry.as_json(only: %i[id subject name company status created_at])
   end
 
   # 詳細用・作成レスポンス用: 本体一式と返信スレッド。
   def detail_json(inquiry)
-    inquiry.as_json(only: %i[id name email subject body status created_at]).merge(
+    inquiry.as_json(only: %i[id name company email subject body status created_at]).merge(
       "replies" => inquiry.replies.map do |reply|
         {
           "id" => reply.id,

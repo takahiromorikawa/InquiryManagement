@@ -5,5 +5,5 @@ class Inquiry < ApplicationRecord
   # unhandled=未対応 / in_progress=対応中 / completed=対応済み
   enum :status, { unhandled: "unhandled", in_progress: "in_progress", completed: "completed" }
 
-  validates :name, :email, :subject, :body, presence: true
+  validates :name, :company, :email, :subject, :body, presence: true
 end

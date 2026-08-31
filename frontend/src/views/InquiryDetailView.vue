@@ -162,87 +162,103 @@ async function onSubmitReply() {
 <style scoped>
 .back {
   display: inline-block;
-  font-size: 13px;
-  margin-bottom: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 18px;
 }
-.note {
-  color: var(--muted);
-  font-size: 13px;
+.back:hover {
+  color: var(--text);
+  text-decoration: none;
 }
 .card + .card {
   margin-top: 20px;
 }
 h2 {
-  font-size: 15px;
-  margin: 0 0 14px;
-  color: var(--muted);
+  font-size: 1.05rem;
+  margin: 0 0 16px;
 }
 .meta {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 4px 16px;
-  font-size: 14px;
-  margin: 0 0 14px;
+  gap: 6px 20px;
+  font-size: 0.95rem;
+  margin: 12px 0 16px;
 }
 .meta dt {
-  color: var(--muted);
+  color: var(--text-muted);
 }
 .meta dd {
   margin: 0;
 }
 .body {
-  background: var(--bg);
-  border-radius: 8px;
-  padding: 14px 16px;
-  font-size: 14px;
+  background: var(--surface-muted);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  font-size: 0.975rem;
+  line-height: 1.8;
   white-space: pre-wrap;
   margin: 0;
 }
 .status-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 12px;
+  margin-top: 22px;
   flex-wrap: wrap;
 }
 .status-label {
-  font-size: 13px;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 .status-row select {
-  padding: 6px 8px;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   font: inherit;
+  font-size: 0.95rem;
+  background: var(--surface);
+}
+.status-row select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
 }
 .status-note {
-  font-size: 12px;
-  color: #157347;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--success);
 }
 .thread {
   list-style: none;
   padding: 0;
-  margin: 0 0 16px;
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 .thread li {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-  margin-bottom: 10px;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  background: var(--surface);
 }
 .reply-head {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 4px;
+  align-items: baseline;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
 }
 .reply-head .staff {
   font-weight: 700;
+  font-size: 0.95rem;
   color: var(--text);
 }
 .reply-body {
-  font-size: 14px;
+  font-size: 0.975rem;
+  line-height: 1.8;
   white-space: pre-wrap;
   margin: 0;
 }

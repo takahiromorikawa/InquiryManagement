@@ -3,15 +3,15 @@
 import { reactive, ref } from 'vue'
 import { api, ApiError } from '../lib/api'
 
-const form = reactive({ name: '', company: '', email: '', subject: '', body: '' })
+const form = reactive({ company: '', name: '', email: '', subject: '', body: '' })
 
 const submitting = ref(false)
 const error = ref('')
 const done = ref(false)
 
 const FIELDS = [
-  { key: 'name', label: '氏名', type: 'input' },
   { key: 'company', label: '会社名', type: 'input' },
+  { key: 'name', label: '氏名', type: 'input' },
   { key: 'email', label: 'メールアドレス', type: 'input', inputType: 'email' },
   { key: 'subject', label: '件名', type: 'input' },
   { key: 'body', label: '内容', type: 'textarea' },
@@ -29,8 +29,8 @@ async function onSubmit() {
   submitting.value = true
   try {
     await api.post('/inquiries', {
-      name: form.name.trim(),
       company: form.company.trim(),
+      name: form.name.trim(),
       email: form.email.trim(),
       subject: form.subject.trim(),
       body: form.body.trim(),
@@ -50,10 +50,12 @@ async function onSubmit() {
 
 <template>
   <section>
-    <h1>お問い合わせ</h1>
-    <p class="lead">
-      ご質問・ご依頼内容をご記入のうえ送信してください。担当者より折り返しご連絡します。
-    </p>
+    <div class="page-head">
+      <h1>お問い合わせ</h1>
+      <p class="lead">
+        ご質問・ご依頼内容をご記入のうえ送信してください。担当者より折り返しご連絡します。
+      </p>
+    </div>
 
     <div class="card">
       <p v-if="done" class="alert success">
@@ -76,10 +78,3 @@ async function onSubmit() {
   </section>
 </template>
 
-<style scoped>
-.lead {
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 20px;
-}
-</style>

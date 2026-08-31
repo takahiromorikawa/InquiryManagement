@@ -9,8 +9,8 @@
 | 項目名 | 型 | 説明 |
 |---|---|---|
 | id | 整数（bigint） | 問い合わせID（自動採番） |
-| name | 文字列（string） | 送信者（顧客）の氏名。必須 |
 | company | 文字列（string） | 送信者（顧客）の会社名。必須 |
+| name | 文字列（string） | 送信者（顧客）の氏名。必須 |
 | email | 文字列（string） | 送信者（顧客）のメールアドレス。必須 |
 | subject | 文字列（string） | 件名。必須 |
 | body | テキスト（text） | 問い合わせ内容。必須 |
@@ -51,8 +51,8 @@ erDiagram
 
     INQUIRY {
         bigint id PK
-        string name
         string company
+        string name
         string email
         string subject
         text body

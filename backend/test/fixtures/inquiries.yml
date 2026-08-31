@@ -2,6 +2,7 @@
 
 unhandled_inquiry:
   name: 田中 太郎
+  company: 株式会社タナカ
   email: tanaka@example.com
   subject: ログインできない
   body: パスワードを入力してもログイン画面から進めません。
@@ -10,6 +11,7 @@ unhandled_inquiry:
 
 in_progress_inquiry:
   name: 高橋 次郎
+  company: 高橋商店
   email: takahashi@example.com
   subject: 請求書の宛名を変更したい
   body: 発行済みの請求書の宛名を修正してもらえますか。

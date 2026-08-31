@@ -1,12 +1,17 @@
 # InquiryManagement（問い合わせ管理アプリ）
 
-顧客からの問い合わせを担当者が管理・返信するWebアプリケーション。[TaskManagement](https://github.com/takahiromorikawa/TaskManagement)とは異なる技術スタック（Ruby on Rails + Vue.js + MySQL）で、1対多のリレーション（問い合わせと返信）と認証機能（担当者ログイン）を伴う設計・実装を行っている。
+顧客からの問い合わせを担当者が管理・返信するWebアプリケーション。[TaskManagement](https://github.com/takahiromorikawa/TaskManagement)とは異なる技術スタック（Ruby on Rails + Vue.js + MySQL）で、1対多のリレーション（問い合わせと返信）と認証機能（担当者ログイン）を伴う設計・実装を行った。
 
 ## 動作確認
 
 <!-- TODO: 実際の動作確認動画・画面キャプチャをここに貼り付ける -->
 
-準備中。実装完了後、一連の操作（問い合わせ投稿 → 担当者ログイン → 一覧・詳細確認 → 返信・ステータス変更）を確認できる動画をここに追加する予定。
+バックエンド（Rails API）・フロントエンド（Vue）とも MVP の機能一式を実装済み。
+一連の操作（問い合わせ投稿 → 担当者ログイン → 一覧・詳細確認 → 返信・ステータス変更）を
+確認できる動画・画面キャプチャは今後追加する。ローカルでの起動手順は下記「セットアップ」を参照。
+
+完成イメージの静的モック（HTML/CSS/JS のみ）を [`mock/index.html`](mock/index.html) に置いている
+（`cd mock && python3 -m http.server 8080`）。
 
 ```mermaid
 flowchart LR

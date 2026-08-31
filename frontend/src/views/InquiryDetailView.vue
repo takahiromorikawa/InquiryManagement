@@ -108,6 +108,8 @@ async function onSubmitReply() {
       <div class="card">
         <h1>{{ inquiry.subject }}</h1>
         <dl class="meta">
+          <dt>会社名</dt>
+          <dd>{{ inquiry.company }}</dd>
           <dt>氏名</dt>
           <dd>{{ inquiry.name }}</dd>
           <dt>メール</dt>

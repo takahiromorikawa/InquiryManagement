@@ -18,9 +18,9 @@ npm install
 npm run dev
 ```
 
-- 開発サーバー: http://localhost:5173 （ポート固定。競合時は別ポートに切り替えず停止する）
+- 開発サーバー: http://localhost:5173 （`vite.config.js` で `strictPort` 指定。競合時は別ポートに切り替えず停止する）
 - API のベースURL: 既定は `http://localhost:3000`。変更する場合は `.env.local` に `VITE_API_BASE` を設定する
-- ログイン用 seed アカウント: `yamada@example.com` ほか（パスワード `password`）。詳細は [`../backend/db/seeds.rb`](../backend/db/seeds.rb)
+- ログイン用 seed アカウント: `yamada@example.com` / `sato@example.com` / `suzuki@example.com`（いずれもパスワード `password`）。詳細は [`../backend/README.md`](../backend/README.md)
 
 ## その他のコマンド
 
@@ -38,4 +38,16 @@ npm run preview   # ビルド結果のプレビュー
 | `/inquiries` | S3 問い合わせ一覧 | 必要 |
 | `/inquiries/:id` | S4 問い合わせ詳細 | 必要 |
 
-未ログインで要ログイン画面にアクセスすると `/login` にリダイレクトする。
+未ログインで要ログイン画面にアクセスすると `/login` にリダイレクトする（`src/router/index.js` の `beforeEach`）。
+
+## ディレクトリ
+
+| パス | 役割 |
+|---|---|
+| `src/views/` | 画面コンポーネント（S1〜S4） |
+| `src/components/` | 共用コンポーネント（`StatusBadge.vue` など） |
+| `src/router/index.js` | ルーティングとルートガード |
+| `src/stores/auth.js` | ログイン中の担当者情報（Pinia、`sessionStorage` にミラー） |
+| `src/lib/api.js` | API 通信ラッパ（`credentials: 'include'`、`ApiError`） |
+| `src/lib/format.js` | 日時フォーマット |
+| `src/constants.js` | ステータスの表示ラベル |

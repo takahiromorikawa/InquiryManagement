@@ -6,18 +6,21 @@
 
 ## バックエンド
 
-- Ruby 3.3.9 / Ruby on Rails 7.1（APIモード、`--api`）
+- Ruby 3.3.9 / Ruby on Rails 7.1（APIモード、`config.api_only = true`）
 - MySQL（永続化、`mysql2` gem）
-- has_secure_password（`bcrypt` gem）による担当者パスワードのハッシュ化
-- Rails標準のセッション（Cookie）によるログイン状態の管理 ※認証機能は別Issueで実装
-- `rack-cors` によるCORS設定（フロント `http://localhost:5173` からのCookie付きリクエストを許可）
+- `has_secure_password`（`bcrypt` gem）による担当者パスワードのハッシュ化
+- Rails標準のセッション（Cookie）によるログイン状態の管理。APIモードで既定では外れる
+  `ActionDispatch::Cookies` / `Session::CookieStore` を明示的に有効化している（`SameSite=Lax`）
+- `rack-cors` によるCORS設定（フロント `http://localhost:5173` からのCookie付きリクエストを許可、`credentials: true`）
+- テストは minitest（`bin/rails test`）
 
 ## フロントエンド
 
-- Vue.js（JavaScript。TypeScript は使わない）
+- Vue.js 3（JavaScript。TypeScript は使わない。`<script setup>` SFC）
 - Vite（開発サーバー・ビルドツール）
 - Vue Router（画面遷移、未ログイン時のリダイレクト制御）
-- Pinia（認証状態などの状態管理）
+- Pinia（ログイン中の担当者情報の管理。`sessionStorage` にミラーしてリロードに耐える）
+- API通信は `fetch` の薄いラッパ（`src/lib/api.js`。`credentials: 'include'` でCookie送受信）
 
 ## データベース
 

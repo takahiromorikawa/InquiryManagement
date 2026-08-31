@@ -49,6 +49,7 @@ function openDetail(id) {
         <thead>
           <tr>
             <th>件名</th>
+            <th>会社名</th>
             <th>送信者</th>
             <th>ステータス</th>
             <th>受信日時</th>
@@ -57,6 +58,7 @@ function openDetail(id) {
         <tbody>
           <tr v-for="i in inquiries" :key="i.id" @click="openDetail(i.id)">
             <td class="subject">{{ i.subject }}</td>
+            <td>{{ i.company }}</td>
             <td>{{ i.name }}</td>
             <td><StatusBadge :status="i.status" /></td>
             <td class="datetime">{{ formatDateTime(i.created_at) }}</td>

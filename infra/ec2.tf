@@ -75,30 +75,47 @@ resource "aws_instance" "app" {
     http_endpoint = "enabled"
   }
 
+  # SSM パラメータより後に作成し、user_data 実行時には接続情報が存在するようにする
+  depends_on = [aws_ssm_parameter.db_host, aws_ssm_parameter.db_password]
+
+  # user_data は初回起動時のみ実行される。内容変更で既存インスタンスを作り直さない
+  # （作り直したいときは terraform taint / -replace を明示する）。
+  user_data_replace_on_change = false
+
   user_data = <<-EOF
     #!/bin/bash
-    set -euxo pipefail
+    set -uxo pipefail
+
+    # --- 開発ツール ---
     dnf update -y
     dnf install -y git docker
     systemctl enable --now docker
     usermod -aG docker ec2-user
-    # docker compose プラグイン
     mkdir -p /usr/local/lib/docker/cli-plugins
-    curl -sSL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" \
+    curl -sSL "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64" \
       -o /usr/local/lib/docker/cli-plugins/docker-compose
     chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
-    # DB 接続情報を SSM Parameter Store から取得して env ファイルに書き出す
-    DB_HOST=$(aws ssm get-parameter --region ${var.region} --name /${var.project}/db_host --query Parameter.Value --output text)
-    DB_PASS=$(aws ssm get-parameter --region ${var.region} --name /${var.project}/db_password --with-decryption --query Parameter.Value --output text)
-    {
-      echo "DB_HOST=$DB_HOST"
-      echo "DB_PORT=3306"
-      echo "DB_NAME=${var.db_name}"
-      echo "DB_USERNAME=${var.db_username}"
-      echo "DB_PASSWORD=$DB_PASS"
-    } > /etc/inquiry-management.env
-    chmod 600 /etc/inquiry-management.env
+    # --- DB 接続情報を SSM Parameter Store から取得して env ファイルに書き出す ---
+    # パラメータや IAM 権限の伝播待ちのためリトライする。失敗してもインスタンス作成は継続。
+    write_db_env() {
+      for i in $(seq 1 20); do
+        DB_HOST=$(aws ssm get-parameter --region ${var.region} --name /${var.project}/db_host --query Parameter.Value --output text 2>/dev/null) || { sleep 15; continue; }
+        DB_PASS=$(aws ssm get-parameter --region ${var.region} --name /${var.project}/db_password --with-decryption --query Parameter.Value --output text 2>/dev/null) || { sleep 15; continue; }
+        {
+          echo "DB_HOST=$DB_HOST"
+          echo "DB_PORT=3306"
+          echo "DB_NAME=${var.db_name}"
+          echo "DB_USERNAME=${var.db_username}"
+          echo "DB_PASSWORD=$DB_PASS"
+        } > /etc/inquiry-management.env
+        chmod 600 /etc/inquiry-management.env
+        return 0
+      done
+      echo "WARN: /etc/inquiry-management.env を作成できませんでした。手動で aws ssm get-parameter してください" >&2
+      return 1
+    }
+    write_db_env || true
   EOF
 
   tags = { Name = "${var.project}-app" }

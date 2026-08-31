@@ -4,13 +4,46 @@
 
 ## 動作確認
 
-<!-- TODO: 実際の動作確認動画・画面キャプチャをここに貼り付ける -->
-
 バックエンド（Rails API）・フロントエンド（Vue）とも MVP の機能一式を実装済み。AWS（EC2 + RDS）にもデプロイ済み
 （URL は `cd infra && terraform output -raw app_url`。接続元 IP をセキュリティグループで制限）。
-一連の操作（問い合わせ投稿 → 担当者ログイン → 一覧・詳細確認 → 返信・ステータス変更）を
-確認できる動画・画面キャプチャは今後追加する。ローカルでの起動手順は下記「セットアップ」、
-デプロイは [`infra/README.md`](infra/README.md) を参照。
+ローカルでの起動手順は下記「セットアップ」、デプロイは [`infra/README.md`](infra/README.md) を参照。
+
+以下は AWS 上のデプロイ環境で一連の操作を録画したもの（[`docs/videos/`](docs/videos)）。
+ログインは seed の管理者アカウント `yamada@example.com` / `password`。
+
+**① 問い合わせを投稿する（顧客・ログイン不要 / UC1）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/01-inquiry-create.mp4" controls muted></video>
+
+**② 担当者ログイン → 問い合わせ一覧（UC2 / UC3）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/02-login-and-inquiry-list.mp4" controls muted></video>
+
+**③ 問い合わせ詳細・返信スレッドの確認（UC4）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/03-inquiry-detail.mp4" controls muted></video>
+
+**④ 返信を投稿する（UC5）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/04-inquiry-reply.mp4" controls muted></video>
+
+**⑤ ステータスを変更する（UC6）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/05-status-change.mp4" controls muted></video>
+
+**⑥ 担当者一覧（管理者のみ / UC8）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/06-staff-list.mp4" controls muted></video>
+
+**⑦ 担当者を追加する（管理者のみ / UC8）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/07-staff-create.mp4" controls muted></video>
+
+**⑧ ログアウト（UC7）**
+
+<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/08-logout.mp4" controls muted></video>
+
+> 動画が再生されない場合は [`docs/videos/`](docs/videos) 内の mp4 を直接開いてください。
 
 **担当者ログイン（seed の管理者アカウント）**
 

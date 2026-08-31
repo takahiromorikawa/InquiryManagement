@@ -25,6 +25,12 @@ const routes = [
     component: () => import('../views/InquiryDetailView.vue'), // S4: 要ログイン
     props: true,
   },
+  {
+    path: '/staffs',
+    name: 'staff-list',
+    component: () => import('../views/StaffListView.vue'), // S5: 管理者のみ
+    meta: { admin: true },
+  },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
@@ -33,11 +39,17 @@ const router = createRouter({
   routes,
 })
 
-// 未ログインで要ログイン画面にアクセスしたらログイン画面へ（UC2 代替フロー）
 router.beforeEach((to) => {
   const auth = useAuthStore()
+
+  // 未ログインで要ログイン画面にアクセスしたらログイン画面へ（UC2 代替フロー）
   if (!to.meta.public && !auth.isLoggedIn) {
     return { name: 'login', query: { redirect: to.fullPath } }
+  }
+
+  // 管理者専用画面に一般担当者がアクセスしたら一覧へ
+  if (to.meta.admin && !auth.isAdmin) {
+    return { name: 'inquiry-list' }
   }
 })
 

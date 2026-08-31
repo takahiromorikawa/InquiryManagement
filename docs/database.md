@@ -36,7 +36,8 @@
 | id | 整数（bigint） | 担当者ID（自動採番） |
 | name | 文字列（string） | 担当者名。必須 |
 | email | 文字列（string） | ログインに使うメールアドレス。必須・一意（ユニークインデックスあり） |
-| password_digest | 文字列（string） | `has_secure_password`（bcrypt）によるパスワードのハッシュ値。平文のパスワードは保存しない |
+| password_digest | 文字列（string） | `has_secure_password`（bcrypt）によるパスワードのハッシュ値。平文のパスワードは保存しない。パスワードは8文字以上 |
+| admin | 真偽値（boolean） | 管理者（親権限）かどうか。NOT NULL、デフォルト `false`。`true` の担当者のみ他の担当者を追加できる |
 | created_at | 日時 | 作成日時 |
 | updated_at | 日時 | 更新日時 |
 
@@ -71,6 +72,7 @@ erDiagram
         string name
         string email
         string password_digest
+        boolean admin
     }
 ```
 
@@ -80,5 +82,6 @@ erDiagram
 - テーブル名は Rails の規約どおり複数形（`inquiries` / `replies` / `staffs`）。文字コードは `utf8mb4`
 - `replies` から `inquiries` / `staffs` へ外部キー制約を張っている。`Inquiry` 削除時は関連する `Reply` も削除される（`dependent: :destroy`）。ただし問い合わせ・担当者の削除機能自体はスコープ外
 - 顧客（問い合わせの送信者）はアプリのユーザーとして登録しない。`Inquiry` の `name`・`email` は入力値をそのまま保存するのみで、`Staff` とは別概念とする
-- 担当者の削除・編集機能は今回のスコープ外とする（初期データとして [`backend/db/seeds.rb`](../backend/db/seeds.rb) で3件の Staff を用意する）
+- 担当者の**追加**は管理者（`admin: true`）が S5 担当者管理画面から行う。**編集・削除**はスコープ外
+- 管理者フラグ（`admin`）を変更する画面は無い。初期管理者（山田太郎）は [`backend/db/seeds.rb`](../backend/db/seeds.rb) で用意し、以後の変更は seed か `bin/rails console` で行う
 - DBの物理構成（MySQL、永続化の方針など）は[要件定義書の非機能要件](requirements.md#非機能要件)と[技術スタック](tech-stack.md)を参照

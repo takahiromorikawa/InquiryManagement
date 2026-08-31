@@ -67,11 +67,6 @@ async function onSubmit() {
           </button>
         </div>
       </form>
-
-      <p class="hint">
-        seed アカウント: yamada@example.com / sato@example.com / suzuki@example.com<br />
-        パスワードはいずれも <code>password</code>
-      </p>
     </div>
 
     <p class="back-to-form">
@@ -84,18 +79,6 @@ async function onSubmit() {
 .login {
   max-width: 420px;
   margin: 24px auto 0;
-}
-.hint {
-  margin: 18px 0 0;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  line-height: 1.8;
-}
-.hint code {
-  background: var(--surface-muted);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 0.85em;
 }
 .back-to-form {
   margin: 16px 0 0;

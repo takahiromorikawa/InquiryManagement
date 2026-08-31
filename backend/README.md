@@ -37,11 +37,14 @@ bin/rails server       # http://localhost:3000
 
 `bin/rails db:seed` で担当者（Staff）を3件作成する（[`db/seeds.rb`](db/seeds.rb)）。冪等。
 
-| 氏名 | メールアドレス | パスワード |
-|---|---|---|
-| 山田 太郎 | yamada@example.com | password |
-| 佐藤 花子 | sato@example.com | password |
-| 鈴木 一郎 | suzuki@example.com | password |
+| 氏名 | メールアドレス | パスワード | 権限 |
+|---|---|---|---|
+| 山田 太郎 | yamada@example.com | password | 管理者（`admin: true`）。担当者の追加ができる |
+| 佐藤 花子 | sato@example.com | password | 一般 |
+| 鈴木 一郎 | suzuki@example.com | password | 一般 |
+
+管理者権限の付与・変更を行う画面は無い。初期管理者は seed で用意し、変更が必要なときは
+`db/seeds.rb` か `bin/rails console` で行う。
 
 ## テスト
 
@@ -54,6 +57,7 @@ bin/rails test
 ## 構成メモ
 
 - `ApplicationController` で全アクションにデフォルトで認証を要求し（`Authentication` concern）、公開エンドポイント（`POST /inquiries`・`POST /login`）のみ `skip_before_action :require_login` している
+- 担当者の一覧・追加（`GET /staffs`・`POST /staffs`）は `require_admin` で管理者（`admin: true`）のみ許可。ログイン済みでも非管理者は `403`
 - 認証は Rails 標準のセッション（Cookie）ベース。APIモードで既定では外れる Cookie / セッション用ミドルウェアを [`config/application.rb`](config/application.rb) で有効化している
 - フロントエンド（`http://localhost:5173`）からの Cookie 付きリクエストを許可するため [`config/initializers/cors.rb`](config/initializers/cors.rb) で `rack-cors` を設定（許可オリジンは環境変数 `FRONTEND_ORIGIN` で変更可能）
 - CSRF トークンによる保護は入れていない（ローカル利用前提の MVP。`SameSite=Lax` で運用）

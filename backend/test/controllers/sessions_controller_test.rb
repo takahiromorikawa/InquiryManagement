@@ -11,7 +11,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @staff.id, body["id"]
     assert_equal @staff.name, body["name"]
     assert_equal @staff.email, body["email"]
+    assert_equal true, body["admin"], "山田太郎は管理者"
     assert_nil body["password_digest"], "パスワードハッシュは返さない"
+  end
+
+  test "POST /login は一般担当者だと admin: false を返す" do
+    post login_url, params: { email: staffs(:sato).email, password: "password" }, as: :json
+    assert_response :success
+    assert_equal false, response.parsed_body["admin"]
   end
 
   test "POST /login はメールアドレスの大文字小文字を区別しない" do

@@ -6,9 +6,11 @@
 
 <!-- TODO: 実際の動作確認動画・画面キャプチャをここに貼り付ける -->
 
-バックエンド（Rails API）・フロントエンド（Vue）とも MVP の機能一式を実装済み。
+バックエンド（Rails API）・フロントエンド（Vue）とも MVP の機能一式を実装済み。AWS（EC2 + RDS）にもデプロイ済み
+（URL は `cd infra && terraform output -raw app_url`。接続元 IP をセキュリティグループで制限）。
 一連の操作（問い合わせ投稿 → 担当者ログイン → 一覧・詳細確認 → 返信・ステータス変更）を
-確認できる動画・画面キャプチャは今後追加する。ローカルでの起動手順は下記「セットアップ」を参照。
+確認できる動画・画面キャプチャは今後追加する。ローカルでの起動手順は下記「セットアップ」、
+デプロイは [`infra/README.md`](infra/README.md) を参照。
 
 **担当者ログイン（seed の管理者アカウント）**
 
@@ -62,6 +64,43 @@ InquiryManagement/
 ├── docker-compose.yml  ローカル開発用の MySQL 8.0
 └── docs/               設計ドキュメント
 ```
+
+## インフラ構成（AWS）
+
+`infra/`（Terraform）で構築。EC2 1台に nginx + Rails をコンテナで載せ、DB は RDS。
+RDS は EC2 のセキュリティグループからのみ到達でき、インターネットからは触れない。
+詳細・手順は [`infra/README.md`](infra/README.md)。
+
+```mermaid
+flowchart TB
+    User["利用者のブラウザ<br/>（接続元IPをSGで制限）"]
+
+    subgraph AWS["AWS (us-east-1)"]
+      SSM["SSM Parameter Store<br/>DBパスワード / SECRET_KEY_BASE<br/>（SecureString）"]
+      subgraph VPC["VPC 10.20.0.0/16"]
+        IGW(["Internet Gateway"])
+        subgraph PUB["パブリックサブネット"]
+          direction TB
+          NGINX["EC2 t3.micro / Elastic IP<br/>─ nginx :80 ─<br/>/ → Vue ビルド（静的）<br/>/api/ → localhost:3000"]
+          RAILS["Rails :3000（同EC2・非公開）"]
+          NGINX --> RAILS
+        end
+        subgraph PRV["プライベートサブネット ×2 AZ<br/>（インターネット経路なし）"]
+          RDS[("RDS db.t3.micro<br/>MySQL 8.0")]
+        end
+      end
+    end
+
+    User -->|"HTTP :80"| IGW --> NGINX
+    RAILS -->|":3306（EC2 SGからのみ）"| RDS
+    NGINX -. "起動時に取得" .-> SSM
+    RAILS -. "SECRET_KEY_BASE / DB接続情報" .-> SSM
+```
+
+- EC2: Docker Compose（`docker-compose.prod.yml`）で `frontend`(nginx) と `backend`(Rails) を起動。公開ポートは 80 のみ
+- RDS: `publicly_accessible = false`、Single-AZ、セキュリティグループのインバウンドは **EC2 SG からの 3306 のみ**（CIDR 許可なし）
+- NAT Gateway・Multi-AZ なし。SSH キーは作らず SSM Session Manager でアクセス
+- 認証情報は Terraform が生成し SSM Parameter Store（SecureString）へ。リポジトリには含めない
 
 ## セットアップ
 

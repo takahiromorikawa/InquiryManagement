@@ -1,6 +1,11 @@
 output "ec2_public_ip" {
-  description = "EC2 のパブリック IP（停止・起動で変わる）"
-  value       = aws_instance.app.public_ip
+  description = "EC2 の Elastic IP（固定）"
+  value       = aws_eip.app.public_ip
+}
+
+output "app_url" {
+  description = "デプロイ後のアプリ URL"
+  value       = "http://${aws_eip.app.public_ip}"
 }
 
 output "ec2_instance_id" {

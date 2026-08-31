@@ -5,8 +5,10 @@ yamada:
   name: 山田 太郎
   email: yamada@example.com
   password_digest: <%= BCrypt::Password.create("password") %>
+  admin: true
 
 sato:
   name: 佐藤 花子
   email: sato@example.com
   password_digest: <%= BCrypt::Password.create("password") %>
+  admin: false

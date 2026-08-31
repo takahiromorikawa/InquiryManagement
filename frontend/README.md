@@ -20,7 +20,7 @@ npm run dev
 
 - 開発サーバー: http://localhost:5173 （`vite.config.js` で `strictPort` 指定。競合時は別ポートに切り替えず停止する）
 - API のベースURL: 既定は `http://localhost:3000`。変更する場合は `.env.local` に `VITE_API_BASE` を設定する
-- ログイン用 seed アカウント: `yamada@example.com` / `sato@example.com` / `suzuki@example.com`（いずれもパスワード `password`）。詳細は [`../backend/README.md`](../backend/README.md)
+- ログイン用アカウント（管理者）: `yamada@example.com` / `password`。他の担当者はログイン後、「担当者管理」画面から山田太郎が追加する。詳細は [`../backend/README.md`](../backend/README.md)
 
 ## その他のコマンド
 
@@ -37,14 +37,15 @@ npm run preview   # ビルド結果のプレビュー
 | `/login` | S2 ログイン | 不要 |
 | `/inquiries` | S3 問い合わせ一覧 | 必要 |
 | `/inquiries/:id` | S4 問い合わせ詳細 | 必要 |
+| `/staffs` | S5 担当者管理 | 必要（管理者のみ） |
 
-未ログインで要ログイン画面にアクセスすると `/login` にリダイレクトする（`src/router/index.js` の `beforeEach`）。
+未ログインで要ログイン画面にアクセスすると `/login` にリダイレクトする。管理者専用画面（`meta.admin`）に一般担当者がアクセスすると `/inquiries` にリダイレクトする（`src/router/index.js` の `beforeEach`）。
 
 ## ディレクトリ
 
 | パス | 役割 |
 |---|---|
-| `src/views/` | 画面コンポーネント（S1〜S4） |
+| `src/views/` | 画面コンポーネント（S1〜S5） |
 | `src/components/` | 共用コンポーネント（`StatusBadge.vue` など） |
 | `src/router/index.js` | ルーティングとルートガード |
 | `src/stores/auth.js` | ログイン中の担当者情報（Pinia、`sessionStorage` にミラー） |

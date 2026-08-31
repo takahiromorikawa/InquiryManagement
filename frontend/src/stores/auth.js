@@ -19,6 +19,8 @@ function loadStaff() {
 export const useAuthStore = defineStore('auth', () => {
   const staff = ref(loadStaff())
   const isLoggedIn = computed(() => staff.value !== null)
+  // 管理者（親権限）。担当者の追加ができる。
+  const isAdmin = computed(() => staff.value?.admin === true)
 
   function setStaff(value) {
     staff.value = value
@@ -48,5 +50,5 @@ export const useAuthStore = defineStore('auth', () => {
     setStaff(null)
   }
 
-  return { staff, isLoggedIn, login, logout, clear }
+  return { staff, isLoggedIn, isAdmin, login, logout, clear }
 })

@@ -23,6 +23,6 @@ class SessionsController < ApplicationController
   private
 
   def staff_json(staff)
-    staff.as_json(only: %i[id name email])
+    staff.as_json(only: %i[id name email admin])
   end
 end

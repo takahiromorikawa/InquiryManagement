@@ -26,6 +26,14 @@ module Authentication
     render json: { error: "ログインが必要です" }, status: :unauthorized
   end
 
+  # 管理者（admin: true）のみ許可する。未ログインは require_login が先に 401 を返す。
+  # ログイン済みだが管理者でない場合は 403 を返す。
+  def require_admin
+    return if current_staff&.admin?
+
+    render json: { error: "権限がありません" }, status: :forbidden
+  end
+
   def login!(staff)
     reset_session
     session[:staff_id] = staff.id

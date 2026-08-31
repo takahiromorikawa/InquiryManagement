@@ -44,6 +44,7 @@ async function onLogout() {
           <span class="avatar">{{ auth.staff?.name?.slice(0, 1) }}</span>
           <span class="user-name">{{ auth.staff?.name }}</span>
         </span>
+        <RouterLink v-if="auth.isAdmin" to="/staffs" class="nav-link">担当者管理</RouterLink>
         <button type="button" class="ghost nav-btn" @click="onLogout">ログアウト</button>
       </nav>
     </div>
@@ -98,6 +99,22 @@ nav {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.nav-link {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+.nav-link:hover {
+  color: var(--text);
+  background: var(--surface-muted);
+  text-decoration: none;
+}
+.nav-link.router-link-active {
+  color: var(--primary);
 }
 
 .nav-btn {

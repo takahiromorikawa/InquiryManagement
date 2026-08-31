@@ -8,9 +8,11 @@
 
 - Ruby 3.3.9 / Ruby on Rails 7.1（APIモード、`config.api_only = true`）
 - MySQL（永続化、`mysql2` gem）
-- `has_secure_password`（`bcrypt` gem）による担当者パスワードのハッシュ化
+- `has_secure_password`（`bcrypt` gem）による担当者パスワードのハッシュ化（8文字以上）
 - Rails標準のセッション（Cookie）によるログイン状態の管理。APIモードで既定では外れる
   `ActionDispatch::Cookies` / `Session::CookieStore` を明示的に有効化している（`SameSite=Lax`）
+- 認可は `Authentication` concern（`require_login` / `require_admin`）。担当者の一覧・追加は
+  管理者（`staffs.admin`）のみ、非管理者は `403`
 - `rack-cors` によるCORS設定（フロント `http://localhost:5173` からのCookie付きリクエストを許可、`credentials: true`）
 - テストは minitest（`bin/rails test`）
 

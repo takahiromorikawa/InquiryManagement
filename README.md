@@ -96,7 +96,7 @@ bin/rails server       # http://localhost:3000
 > bundle install
 > ```
 
-`bin/rails db:seed` で担当者（Staff）の初期データが3件作成される（ログイン用パスワードはいずれも `password`）。
+`bin/rails db:seed` で担当者（Staff）の初期データが3件作成される（ログイン用パスワードはいずれも `password`。うち山田太郎が管理者）。
 
 ### 3. フロントエンドの起動
 

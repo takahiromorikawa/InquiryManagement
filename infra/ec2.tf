@@ -91,10 +91,22 @@ resource "aws_instance" "app" {
     dnf install -y git docker
     systemctl enable --now docker
     usermod -aG docker ec2-user
+    # docker compose / buildx プラグイン（compose v2 の build には buildx が必要）
     mkdir -p /usr/local/lib/docker/cli-plugins
     curl -sSL "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64" \
       -o /usr/local/lib/docker/cli-plugins/docker-compose
-    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+    curl -sSL "https://github.com/docker/buildx/releases/download/v0.17.1/buildx-v0.17.1.linux-amd64" \
+      -o /usr/local/lib/docker/cli-plugins/docker-buildx
+    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/lib/docker/cli-plugins/docker-buildx
+
+    # --- swap 2GB（t3.micro でのイメージビルド用） ---
+    if ! swapon --show | grep -q /swapfile; then
+      dd if=/dev/zero of=/swapfile bs=1M count=2048
+      chmod 600 /swapfile
+      mkswap /swapfile
+      swapon /swapfile
+      echo '/swapfile none swap sw 0 0' >> /etc/fstab
+    fi
 
     # --- DB 接続情報を SSM Parameter Store から取得して env ファイルに書き出す ---
     # パラメータや IAM 権限の伝播待ちのためリトライする。失敗してもインスタンス作成は継続。

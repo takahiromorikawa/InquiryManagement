@@ -12,7 +12,7 @@
         │
    ┌────┴─────────────── public subnet (10.20.1.0/24) ──────┐
    │   EC2  t3.micro  (SG: inquiry-management-ec2)           │
-   │     - 自動割り当てパブリック IP                          │
+   │     - Elastic IP（固定）                                 │
    │     - SSM Session Manager / SSH                          │
    └────┬───────────────────────────────────────────────────┘
         │ 3306（EC2 SG からのみ）
@@ -63,14 +63,43 @@ $(terraform output -raw ssh_command)
 aws ssm start-session --target $(terraform output -raw ec2_instance_id)
 ```
 
-user_data で `git` / `docker` / `docker compose` を導入済み。アプリのデプロイ（リポジトリの clone、
-`backend` の起動、`frontend` のビルド配信など）は手動で行う。RDS への疎通確認:
+user_data で `git` / `docker` / `docker compose` / `buildx` / swap 2GB を用意済み。
+
+RDS への疎通確認:
 
 ```bash
 source /etc/inquiry-management.env
 sudo dnf install -y mariadb105   # mysql クライアント
 mysql -h "$DB_HOST" -P 3306 -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_NAME" -e 'SELECT 1;'
 ```
+
+## アプリのデプロイ
+
+[`deploy.sh`](deploy.sh) が EC2 上で clone → build → 起動 → `db:seed` まで行う（冪等。更新時も同じ）。
+ローカルから SSM Run Command 一発で実行できる:
+
+```bash
+cd infra
+eval "$(aws configure export-credentials --format env)"   # terraform provider 用に一時クレデンシャルを env へ
+
+CMD=$(aws ssm send-command --region us-east-1 \
+  --instance-ids "$(terraform output -raw ec2_instance_id)" \
+  --document-name AWS-RunShellScript --timeout-seconds 3600 \
+  --parameters '{"commands":["curl -sSL https://raw.githubusercontent.com/takahiromorikawa/InquiryManagement/main/infra/deploy.sh | sudo bash"],"executionTimeout":["3600"]}' \
+  --query Command.CommandId --output text)
+
+# 進捗
+aws ssm get-command-invocation --region us-east-1 --command-id "$CMD" \
+  --instance-id "$(terraform output -raw ec2_instance_id)" \
+  --query '{Status:Status,Out:StandardOutputContent}' --output text
+```
+
+完了後、`terraform output -raw app_url`（= `http://<EIP>`）をブラウザで開く。
+接続元はセキュリティグループの `allowed_ingress_cidr` に限定されている。
+
+構成: nginx（80番）が `/` は Vue のビルド、`/api/` は Rails（`backend:3000`）へリバースプロキシ。
+`SECRET_KEY_BASE` は Terraform が生成し SSM SecureString（`/inquiry-management/secret_key_base`）に保存、
+デプロイ時に取得する。`FORCE_SSL=false`（TLS 未終端のため）。
 
 ## コスト（us-east-1 / 目安）
 
@@ -80,9 +109,10 @@ mysql -h "$DB_HOST" -P 3306 -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_NAME" -e 'SE
 | RDS db.t3.micro (Single-AZ) | 750 時間/月まで無料 | 約 $12〜13/月 |
 | RDS ストレージ 20GB gp2 | 20GB まで無料 | 約 $2.3/月 |
 | EC2 EBS 12GB gp3 | 30GB まで無料 | 約 $1/月 |
+| パブリック IPv4（EIP、稼働中） | — | 約 $3.6/月（EIP・自動割り当てとも同額） |
 | バックアップ / SSM パラメータ(標準) / データ転送(少量) | 実質無料 | 少額 |
 
-- NAT Gateway・EIP・Multi-AZ を使わないことで固定費を抑えている
+- NAT Gateway・Multi-AZ を使わないことで固定費を抑えている
 - **使わないときは `terraform destroy` で削除**すれば課金は止まる（`skip_final_snapshot = true`）
 
 ## 破棄

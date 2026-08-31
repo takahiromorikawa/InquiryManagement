@@ -42,14 +42,14 @@
 問い合わせを表す JSON は、詳細形（`detail`）と一覧形（`list`）の2種類がある。
 
 - **detail 形**（`GET /inquiries/:id`・`POST /inquiries`・`PATCH /inquiries/:id` が返す）:
-  `id`, `name`, `company`, `email`, `subject`, `body`, `status`, `created_at`, `replies`
+  `id`, `company`, `name`, `email`, `subject`, `body`, `status`, `created_at`, `replies`
   - `replies` は配列で、各要素は `id`, `body`, `staff`（返信した担当者名）, `created_at`。投稿日時の古い順
 - **list 形**（`GET /inquiries` が返す配列の各要素）:
-  `id`, `subject`, `name`, `company`, `status`, `created_at`
+  `id`, `subject`, `company`, `name`, `status`, `created_at`
 
 ### POST /inquiries（問い合わせ投稿）
 
-- リクエスト: `name`（氏名）, `company`（会社名）, `email`（メールアドレス）, `subject`（件名）, `body`（内容）。上記以外のパラメータは無視する
+- リクエスト: `company`（会社名）, `name`（氏名）, `email`（メールアドレス）, `subject`（件名）, `body`（内容）。上記以外のパラメータは無視する
 - レスポンス（成功時）: `201 Created`、登録された問い合わせ（detail 形。`status` は自動的に `unhandled`、`replies` は空配列）
 - レスポンス（失敗時）: 未入力項目がある場合 `422` と `{ "errors": [...] }`
 

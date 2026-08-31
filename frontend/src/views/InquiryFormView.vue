@@ -3,15 +3,15 @@
 import { reactive, ref } from 'vue'
 import { api, ApiError } from '../lib/api'
 
-const form = reactive({ name: '', company: '', email: '', subject: '', body: '' })
+const form = reactive({ company: '', name: '', email: '', subject: '', body: '' })
 
 const submitting = ref(false)
 const error = ref('')
 const done = ref(false)
 
 const FIELDS = [
-  { key: 'name', label: '氏名', type: 'input' },
   { key: 'company', label: '会社名', type: 'input' },
+  { key: 'name', label: '氏名', type: 'input' },
   { key: 'email', label: 'メールアドレス', type: 'input', inputType: 'email' },
   { key: 'subject', label: '件名', type: 'input' },
   { key: 'body', label: '内容', type: 'textarea' },
@@ -29,8 +29,8 @@ async function onSubmit() {
   submitting.value = true
   try {
     await api.post('/inquiries', {
-      name: form.name.trim(),
       company: form.company.trim(),
+      name: form.name.trim(),
       email: form.email.trim(),
       subject: form.subject.trim(),
       body: form.body.trim(),

@@ -9,18 +9,39 @@
 ローカルでの起動手順は下記「セットアップ」、デプロイは [`infra/README.md`](infra/README.md) を参照。
 
 以下は AWS 上のデプロイ環境で一連の操作を録画したもの。ログインは seed の管理者アカウント
-`yamada@example.com` / `password`。動画ファイルは [`docs/videos/`](docs/videos)（クリックすると再生ページが開く）。
+`yamada@example.com` / `password`。
 
-| # | 操作 | 対応 UC | 動画 |
-|---|---|---|---|
-| ① | 問い合わせを投稿する（顧客・ログイン不要） | UC1 | [▶ 再生](docs/videos/01-inquiry-create.mp4) |
-| ② | 担当者ログイン → 問い合わせ一覧 | UC2 / UC3 | [▶ 再生](docs/videos/02-login-and-inquiry-list.mp4) |
-| ③ | 問い合わせ詳細・返信スレッドの確認 | UC4 | [▶ 再生](docs/videos/03-inquiry-detail.mp4) |
-| ④ | 返信を投稿する | UC5 | [▶ 再生](docs/videos/04-inquiry-reply.mp4) |
-| ⑤ | ステータスを変更する | UC6 | [▶ 再生](docs/videos/05-status-change.mp4) |
-| ⑥ | 担当者一覧（管理者のみ） | UC8 | [▶ 再生](docs/videos/06-staff-list.mp4) |
-| ⑦ | 担当者を追加する（管理者のみ） | UC8 | [▶ 再生](docs/videos/07-staff-create.mp4) |
-| ⑧ | ログアウト | UC7 | [▶ 再生](docs/videos/08-logout.mp4) |
+**① 問い合わせを投稿する（顧客・ログイン不要 / UC1）**
+
+![問い合わせ投稿](docs/videos/01-inquiry-create.gif)
+
+**② 担当者ログイン → 問い合わせ一覧（UC2 / UC3）**
+
+![ログインと一覧](docs/videos/02-login-and-inquiry-list.gif)
+
+**③ 問い合わせ詳細・返信スレッドの確認（UC4）**
+
+![問い合わせ詳細](docs/videos/03-inquiry-detail.gif)
+
+**④ 返信を投稿する（UC5）**
+
+![返信投稿](docs/videos/04-inquiry-reply.gif)
+
+**⑤ ステータスを変更する（UC6）**
+
+![ステータス変更](docs/videos/05-status-change.gif)
+
+**⑥ 担当者一覧（管理者のみ / UC8）**
+
+![担当者一覧](docs/videos/06-staff-list.gif)
+
+**⑦ 担当者を追加する（管理者のみ / UC8）**
+
+![担当者追加](docs/videos/07-staff-create.gif)
+
+**⑧ ログアウト（UC7）**
+
+![ログアウト](docs/videos/08-logout.gif)
 
 **担当者ログイン（seed の管理者アカウント）**
 
@@ -29,9 +50,6 @@
 | `yamada@example.com` | `password` | 管理者（担当者の追加ができる） |
 
 他の担当者はログイン後、山田太郎（管理者）が「担当者管理」画面から追加する。
-
-完成イメージの静的モック（HTML/CSS/JS のみ）を [`mock/index.html`](mock/index.html) に置いている
-（`cd mock && python3 -m http.server 8080`）。
 
 ```mermaid
 flowchart LR

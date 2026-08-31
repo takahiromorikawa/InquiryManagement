@@ -73,6 +73,10 @@ async function onSubmit() {
         パスワードはいずれも <code>password</code>
       </p>
     </div>
+
+    <p class="back-to-form">
+      <RouterLink to="/">← 問い合わせフォームに戻る</RouterLink>
+    </p>
   </section>
 </template>
 
@@ -92,5 +96,17 @@ async function onSubmit() {
   padding: 1px 6px;
   border-radius: 4px;
   font-size: 0.85em;
+}
+.back-to-form {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.back-to-form a {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.back-to-form a:hover {
+  color: var(--primary);
 }
 </style>

@@ -1,10 +1,15 @@
 <script setup>
+import { computed } from 'vue'
 import { RouterView, RouterLink, useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 
 const auth = useAuthStore()
 const router = useRouter()
 const route = useRoute()
+
+// ロゴがホームリンクを兼ねる。ログイン中は問い合わせ一覧、未ログインは問い合わせフォームへ。
+const homeLink = computed(() => (auth.isLoggedIn ? '/inquiries' : '/'))
+const homeLabel = computed(() => (auth.isLoggedIn ? '問い合わせ一覧へ' : '問い合わせフォームへ'))
 
 async function onLogout() {
   await auth.logout()
@@ -15,7 +20,7 @@ async function onLogout() {
 <template>
   <header class="appbar">
     <div class="appbar-inner">
-      <RouterLink :to="auth.isLoggedIn ? '/inquiries' : '/'" class="mark" aria-label="ホーム">
+      <RouterLink :to="homeLink" class="mark" :title="homeLabel" :aria-label="homeLabel">
         <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true">
           <defs>
             <linearGradient id="g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
@@ -78,9 +83,15 @@ async function onLogout() {
   display: inline-flex;
   line-height: 0;
   border-radius: 9px;
+  transition: opacity 0.15s ease;
 }
 .mark:hover {
   text-decoration: none;
+  opacity: 0.82;
+}
+.mark:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
 }
 
 nav {

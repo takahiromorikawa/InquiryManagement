@@ -1,0 +1,33 @@
+# 本番（EC2）用。ローカル開発は docker-compose.yml を使う。
+#
+#   export SECRET_KEY_BASE=...        # 128 桁の hex（SSM から取得）
+#   docker compose -f docker-compose.prod.yml up -d --build
+#   docker compose -f docker-compose.prod.yml exec backend ./bin/rails db:seed
+#
+# DB 接続情報（DB_HOST 等）は /etc/inquiry-management.env から読み込む
+# （EC2 の user_data が SSM Parameter Store の値を書き出したもの）。
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file:
+      - /etc/inquiry-management.env
+    environment:
+      RAILS_ENV: production
+      FORCE_SSL: "false" # nginx との間は HTTP。TLS 終端していないため
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE を設定してください}
+    command: ["./bin/rails", "server", "-b", "0.0.0.0"]
+    expose:
+      - "3000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: /api
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"

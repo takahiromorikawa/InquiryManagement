@@ -8,42 +8,19 @@
 （URL は `cd infra && terraform output -raw app_url`。接続元 IP をセキュリティグループで制限）。
 ローカルでの起動手順は下記「セットアップ」、デプロイは [`infra/README.md`](infra/README.md) を参照。
 
-以下は AWS 上のデプロイ環境で一連の操作を録画したもの（[`docs/videos/`](docs/videos)）。
-ログインは seed の管理者アカウント `yamada@example.com` / `password`。
+以下は AWS 上のデプロイ環境で一連の操作を録画したもの。ログインは seed の管理者アカウント
+`yamada@example.com` / `password`。動画ファイルは [`docs/videos/`](docs/videos)（クリックすると再生ページが開く）。
 
-**① 問い合わせを投稿する（顧客・ログイン不要 / UC1）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/01-inquiry-create.mp4" controls muted></video>
-
-**② 担当者ログイン → 問い合わせ一覧（UC2 / UC3）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/02-login-and-inquiry-list.mp4" controls muted></video>
-
-**③ 問い合わせ詳細・返信スレッドの確認（UC4）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/03-inquiry-detail.mp4" controls muted></video>
-
-**④ 返信を投稿する（UC5）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/04-inquiry-reply.mp4" controls muted></video>
-
-**⑤ ステータスを変更する（UC6）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/05-status-change.mp4" controls muted></video>
-
-**⑥ 担当者一覧（管理者のみ / UC8）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/06-staff-list.mp4" controls muted></video>
-
-**⑦ 担当者を追加する（管理者のみ / UC8）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/07-staff-create.mp4" controls muted></video>
-
-**⑧ ログアウト（UC7）**
-
-<video src="https://github.com/takahiromorikawa/InquiryManagement/raw/main/docs/videos/08-logout.mp4" controls muted></video>
-
-> 動画が再生されない場合は [`docs/videos/`](docs/videos) 内の mp4 を直接開いてください。
+| # | 操作 | 対応 UC | 動画 |
+|---|---|---|---|
+| ① | 問い合わせを投稿する（顧客・ログイン不要） | UC1 | [▶ 再生](docs/videos/01-inquiry-create.mp4) |
+| ② | 担当者ログイン → 問い合わせ一覧 | UC2 / UC3 | [▶ 再生](docs/videos/02-login-and-inquiry-list.mp4) |
+| ③ | 問い合わせ詳細・返信スレッドの確認 | UC4 | [▶ 再生](docs/videos/03-inquiry-detail.mp4) |
+| ④ | 返信を投稿する | UC5 | [▶ 再生](docs/videos/04-inquiry-reply.mp4) |
+| ⑤ | ステータスを変更する | UC6 | [▶ 再生](docs/videos/05-status-change.mp4) |
+| ⑥ | 担当者一覧（管理者のみ） | UC8 | [▶ 再生](docs/videos/06-staff-list.mp4) |
+| ⑦ | 担当者を追加する（管理者のみ） | UC8 | [▶ 再生](docs/videos/07-staff-create.mp4) |
+| ⑧ | ログアウト | UC7 | [▶ 再生](docs/videos/08-logout.mp4) |
 
 **担当者ログイン（seed の管理者アカウント）**
 

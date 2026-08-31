@@ -1,0 +1,16 @@
+# このファイルを terraform.tfvars にコピーして値を調整する。
+# terraform.tfvars は .gitignore 済み。
+
+region  = "us-east-1"
+project = "inquiry-management"
+
+# EC2 へのアクセス元を自分のグローバル IP に絞ることを強く推奨
+# 確認: curl -s ifconfig.me
+allowed_ingress_cidr = "0.0.0.0/0"
+
+# EC2 に登録する SSH 公開鍵。SSM Session Manager だけで良ければ "" にする
+ssh_public_key_path = "~/.ssh/id_ed25519.pub"
+
+# 無料利用枠に合わせる場合はそのまま
+ec2_instance_type = "t3.micro"
+db_instance_class = "db.t3.micro"

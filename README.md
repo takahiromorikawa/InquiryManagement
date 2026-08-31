@@ -58,6 +58,7 @@ flowchart LR
 InquiryManagement/
 ├── backend/            Rails APIバックエンド
 ├── frontend/           Vue フロントエンド
+├── infra/              AWS 構成（Terraform: EC2 + RDS 最小構成）
 ├── docker-compose.yml  ローカル開発用の MySQL 8.0
 └── docs/               設計ドキュメント
 ```

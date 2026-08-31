@@ -1,0 +1,4 @@
+.DS_Store
+
+# 動画の元ファイル（変換前）。README で使うのは docs/videos/*.mp4
+イメージ動画/
